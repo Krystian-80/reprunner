@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Sales Driver</title>
+<title>RepRunner</title>
 <style>
   :root {
     --bg: #0a0a0f;
@@ -145,7 +145,7 @@
 <!-- ===== LIST SCREEN ===== -->
 <div id="screen-list" class="screen">
   <div class="list-top">
-    <h1>Sales Driver 🚗</h1>
+    <h1>RepRunner 🏃</h1>
     <div class="sub" id="list-sub">Ładowanie leadów...</div>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -294,11 +294,25 @@ let recognition = null;
 let isRecording = false;
 let cfg = {noteWebhook:'', offerWebhook:'', reminderWebhook:'', email:''};
 
-// Load config from localStorage
-try {
-  const saved = localStorage.getItem('sd_cfg');
-  if(saved) cfg = {...cfg, ...JSON.parse(saved)};
-} catch(e){}
+try { const s = localStorage.getItem('sd_cfg'); if(s) cfg = {...cfg, ...JSON.parse(s)}; } catch(e){}
+
+function loadSavedNotes() {
+  try {
+    const s = localStorage.getItem('rr_notes');
+    if(!s) return;
+    const notes = JSON.parse(s);
+    leads.forEach(l => { if(notes[l.idx] !== undefined) l.notatka = notes[l.idx]; });
+  } catch(e){}
+}
+function persistNote(idx, text) {
+  try {
+    const s = localStorage.getItem('rr_notes');
+    const notes = s ? JSON.parse(s) : {};
+    notes[idx] = text;
+    localStorage.setItem('rr_notes', JSON.stringify(notes));
+  } catch(e){}
+}
+loadSavedNotes();
 
 // ==================== FILTERING ====================
 function filteredLeads() {
@@ -420,16 +434,21 @@ function startVoice() {
   recognition.lang = 'pl-PL';
   recognition.continuous = true;
   recognition.interimResults = true;
-  const existing = document.getElementById('note-text').value;
+  const existing = document.getElementById('note-text').value.trim();
   let finalTranscript = existing;
+  let lastResultIndex = 0;
 
   recognition.onresult = (e) => {
     let interim = '';
     for(let i = e.resultIndex; i < e.results.length; i++) {
-      if(e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + e.results[i][0].transcript;
-      else interim = e.results[i][0].transcript;
+      const t = e.results[i][0].transcript.trim();
+      if(e.results[i].isFinal) {
+        finalTranscript += (finalTranscript ? ' ' : '') + t;
+      } else {
+        interim = t;
+      }
     }
-    document.getElementById('note-text').value = finalTranscript + (interim ? ' ' + interim : '');
+    document.getElementById('note-text').value = finalTranscript + (interim ? ' … ' + interim : '');
   };
   recognition.onend = () => { isRecording = false; updateVoiceUI(); };
   recognition.start();
@@ -455,6 +474,7 @@ async function saveNote() {
   if(!text) { showToast('Notatka jest pusta', 'error'); return; }
   const l = leads[currentIdx];
   l.notatka = text;
+  persistNote(l.idx, text);
 
   if(cfg.noteWebhook) {
     try {
