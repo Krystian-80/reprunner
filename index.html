@@ -5,619 +5,572 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RepRunner</title>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c27;
-    --border: #2a2a3d;
-    --accent: #ff4d00;
-    --accent2: #ff7a33;
-    --green: #00e676;
-    --blue: #2979ff;
-    --yellow: #ffd600;
-    --text: #f0f0f5;
-    --muted: #6b6b85;
-    --radius: 16px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Sans',system-ui,sans-serif; }
+:root {
+  --bg: #0c0d08;
+  --surface: #141510;
+  --surface2: #1c1e15;
+  --surface3: #23261a;
+  --border: #2e3122;
+  --border2: #3d4230;
+  --accent: #8a9a4a;
+  --accent2: #b8cc5a;
+  --accent3: #d4e870;
+  --dim: #5a6335;
+  --red: #c0392b;
+  --green: #4a7c3f;
+  --green2: #6ab04c;
+  --amber: #b8860b;
+  --amber2: #d4a017;
+  --text: #d8dcc0;
+  --text2: #9aa080;
+  --text3: #5a6040;
+  --radius: 4px;
+  --radius2: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Courier New',monospace;}
 
-  /* SCREENS */
-  .screen { position:fixed; inset:0; display:flex; flex-direction:column; transition:transform .3s cubic-bezier(.4,0,.2,1), opacity .3s; }
-  .screen.hidden { transform:translateX(100%); opacity:0; pointer-events:none; }
-  .screen.slide-left { transform:translateX(-100%); opacity:0; pointer-events:none; }
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .25s;}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
+.screen.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none;}
 
-  /* HEADER */
-  .header { padding:52px 20px 16px; display:flex; align-items:center; gap:12px; background:var(--bg); flex-shrink:0; }
-  .header-back { width:40px; height:40px; border-radius:12px; background:var(--surface); border:none; color:var(--text); font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
-  .header-title { font-size:18px; font-weight:700; letter-spacing:-.3px; }
-  .header-sub { font-size:13px; color:var(--muted); margin-top:2px; }
+/* scanline overlay */
+.screen::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:999;}
 
-  /* LIST SCREEN */
-  #screen-list { background:var(--bg); }
-  .list-top { padding:52px 20px 12px; flex-shrink:0; }
-  .list-top h1 { font-size:28px; font-weight:800; letter-spacing:-.5px; }
-  .list-top .sub { font-size:14px; color:var(--muted); margin-top:4px; }
-  .progress-bar { margin:16px 20px 0; height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; flex-shrink:0; }
-  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:2px; transition:width .4s; }
-  .progress-label { padding:6px 20px 0; font-size:12px; color:var(--muted); flex-shrink:0; }
+.hdr{padding:48px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.hdr-back{width:36px;height:36px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border2);color:var(--accent2);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;}
+.hdr-title{font-size:15px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;}
+.hdr-sub{font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:2px;}
 
-  .filter-row { display:flex; gap:8px; padding:12px 20px; overflow-x:auto; flex-shrink:0; scrollbar-width:none; }
-  .filter-row::-webkit-scrollbar { display:none; }
-  .filter-chip { flex-shrink:0; padding:7px 14px; border-radius:20px; background:var(--surface); border:1px solid var(--border); font-size:13px; color:var(--muted); cursor:pointer; transition:all .15s; white-space:nowrap; }
-  .filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+/* LIST */
+#screen-list{background:var(--bg);}
+.list-top{padding:48px 16px 10px;flex-shrink:0;}
+.brand{font-size:11px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+.list-top h1{font-size:32px;font-weight:700;color:var(--accent2);letter-spacing:4px;text-transform:uppercase;line-height:1;}
+.blade-sub{font-size:10px;color:var(--text3);letter-spacing:2px;margin-top:4px;}
 
-  .lead-list { flex:1; overflow-y:auto; padding:4px 20px 100px; scrollbar-width:none; }
-  .lead-list::-webkit-scrollbar { display:none; }
+.prog-wrap{padding:10px 16px 0;flex-shrink:0;}
+.prog-bar{height:2px;background:var(--surface3);position:relative;}
+.prog-fill{height:100%;background:var(--accent);transition:width .4s;}
+.prog-label{font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:4px;}
 
-  .lead-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:10px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:14px; }
-  .lead-card:active { transform:scale(.98); background:var(--surface2); }
-  .lead-avatar { width:46px; height:46px; border-radius:14px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; flex-shrink:0; color:var(--accent); border:1px solid var(--border); }
-  .lead-info { flex:1; min-width:0; }
-  .lead-name { font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .lead-meta { font-size:13px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .lead-badge { flex-shrink:0; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:.3px; }
-  .badge-open { background:rgba(41,121,255,.15); color:var(--blue); }
-  .badge-done { background:rgba(0,230,118,.12); color:var(--green); }
-  .badge-offer { background:rgba(255,214,0,.12); color:var(--yellow); }
-  .badge-default { background:var(--surface2); color:var(--muted); }
+.filters{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:5px 12px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:11px;color:var(--text3);cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
+.chip.on{background:var(--surface3);border-color:var(--accent);color:var(--accent2);}
 
-  .fab { position:fixed; bottom:24px; right:20px; width:56px; height:56px; border-radius:18px; background:var(--accent); border:none; color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 20px rgba(255,77,0,.4); z-index:10; }
+.lead-list{flex:1;overflow-y:auto;padding:4px 16px 90px;scrollbar-width:none;}
+.lead-list::-webkit-scrollbar{display:none;}
 
-  /* DETAIL SCREEN */
-  #screen-detail { background:var(--bg); }
-  .detail-hero { padding:0 20px 20px; flex-shrink:0; }
-  .detail-avatar-big { width:64px; height:64px; border-radius:20px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; color:var(--accent); border:1px solid var(--border); margin-bottom:14px; }
-  .detail-name { font-size:26px; font-weight:800; letter-spacing:-.5px; }
-  .detail-firma { font-size:14px; color:var(--muted); margin-top:4px; }
-  .detail-tags { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .tag { padding:5px 10px; border-radius:8px; background:var(--surface); border:1px solid var(--border); font-size:12px; color:var(--muted); }
+.lcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .1s;}
+.lcard:active{background:var(--surface2);border-left-color:var(--accent);}
+.lcard.has-note{border-left-color:var(--accent);}
+.ava{width:40px;height:40px;border-radius:var(--radius);background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;color:var(--accent2);border:1px solid var(--border2);letter-spacing:0;}
+.linfo{flex:1;min-width:0;}
+.lname{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.5px;}
+.lmeta{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px;}
+.badge{flex-shrink:0;padding:3px 8px;border-radius:var(--radius);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
+.b-note{background:rgba(74,124,63,.2);color:var(--green2);border:1px solid var(--green);}
+.b-open{background:rgba(138,154,74,.1);color:var(--dim);border:1px solid var(--border2);}
+.b-offer{background:rgba(184,134,11,.15);color:var(--amber2);border:1px solid var(--amber);}
+.b-warn{background:rgba(192,57,43,.15);color:#e74c3c;border:1px solid var(--red);}
 
-  .info-grid { margin:0 20px; display:grid; gap:1px; border-radius:var(--radius); overflow:hidden; flex-shrink:0; }
-  .info-row { background:var(--surface); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .info-label { font-size:13px; color:var(--muted); }
-  .info-val { font-size:14px; font-weight:600; text-align:right; max-width:60%; word-break:break-all; }
+.fab{position:fixed;bottom:20px;right:16px;width:48px;height:48px;border-radius:var(--radius);background:var(--surface3);border:1px solid var(--accent);color:var(--accent2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
 
-  .notatka-box { margin:14px 20px 0; background:var(--surface); border-radius:var(--radius); padding:14px 16px; flex-shrink:0; }
-  .notatka-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:8px; }
-  .notatka-text { font-size:14px; line-height:1.6; color:var(--text); min-height:40px; }
-  .notatka-empty { color:var(--muted); font-style:italic; }
+/* DETAIL */
+#screen-detail{background:var(--bg);}
+.det-scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
+.det-scroll::-webkit-scrollbar{display:none;}
+.det-hero{padding:16px 16px 12px;border-bottom:1px solid var(--border);}
+.det-ava{width:52px;height:52px;border-radius:var(--radius);background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent2);border:1px solid var(--border2);margin-bottom:10px;}
+.det-name{font-size:22px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;}
+.det-firma{font-size:12px;color:var(--text3);margin-top:3px;letter-spacing:1px;}
+.det-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.tag{padding:3px 8px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
 
-  .actions { flex-shrink:0; padding:16px 20px 8px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .btn { border:none; border-radius:14px; padding:16px 12px; font-size:15px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition:all .12s; }
-  .btn:active { transform:scale(.96); }
-  .btn-icon { font-size:22px; }
-  .btn-call { background:var(--green); color:#001a0d; grid-column:1/-1; flex-direction:row; justify-content:center; gap:12px; font-size:17px; padding:18px; }
-  .btn-note { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
-  .btn-offer { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
-  .btn-reminder { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
-  .btn-next { background:var(--accent); color:#fff; }
-  .btn.recording { background:rgba(255,77,0,.2) !important; border-color:var(--accent) !important; color:var(--accent) !important; animation:pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.info-block{margin:12px 16px;border:1px solid var(--border);border-radius:var(--radius);}
+.irow{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.irow:last-child{border-bottom:none;}
+.ilabel{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+.ival{font-size:12px;font-weight:700;color:var(--text);text-align:right;max-width:58%;word-break:break-all;}
+.ival.em{color:var(--accent);font-size:11px;}
 
-  /* NOTE SCREEN */
-  #screen-note { background:var(--bg); }
-  .note-body { flex:1; display:flex; flex-direction:column; padding:0 20px 20px; }
-  .note-textarea { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; font-size:16px; color:var(--text); resize:none; outline:none; font-family:inherit; line-height:1.6; margin-bottom:14px; }
-  .note-textarea:focus { border-color:var(--accent); }
-  .voice-btn { width:100%; padding:20px; border-radius:var(--radius); background:var(--surface2); border:2px solid var(--border); color:var(--text); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all .15s; margin-bottom:10px; }
-  .voice-btn.active { background:rgba(255,77,0,.15); border-color:var(--accent); color:var(--accent); }
-  .save-btn { width:100%; padding:18px; border-radius:var(--radius); background:var(--accent); border:none; color:#fff; font-size:17px; font-weight:800; cursor:pointer; }
+.note-block{margin:0 16px 12px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;}
+.note-lbl{font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.note-val{font-size:13px;line-height:1.6;color:var(--text);}
+.note-empty{color:var(--text3);font-style:italic;font-size:12px;}
 
-  /* OFFER SCREEN */
-  #screen-offer { background:var(--bg); }
-  .offer-body { flex:1; overflow-y:auto; padding:0 20px 20px; scrollbar-width:none; }
-  .offer-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:12px; cursor:pointer; transition:all .15s; }
-  .offer-card:active { transform:scale(.98); }
-  .offer-card.selected { border-color:var(--accent); background:rgba(255,77,0,.08); }
-  .offer-title { font-size:16px; font-weight:700; }
-  .offer-desc { font-size:13px; color:var(--muted); margin-top:6px; line-height:1.5; }
-  .offer-price { font-size:20px; font-weight:800; color:var(--accent); margin-top:8px; }
-  .send-btn { margin:0 20px; width:calc(100% - 40px); padding:18px; border-radius:var(--radius); background:var(--accent); border:none; color:#fff; font-size:17px; font-weight:800; cursor:pointer; flex-shrink:0; margin-bottom:16px; }
+.actions{padding:12px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;}
+.btn{border:none;border-radius:var(--radius);padding:14px 10px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .1s;font-family:inherit;letter-spacing:1px;text-transform:uppercase;}
+.btn:active{transform:scale(.97);}
+.btn-icon{font-size:20px;}
+.btn-call{background:var(--green);color:#0a1a08;grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;font-size:14px;padding:16px;border:1px solid var(--green2);}
+.btn-call:active{background:#3a6a30;}
+.btn-sec{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
+.btn-sec:active{background:var(--surface3);}
+.btn-next{background:var(--surface3);color:var(--accent2);border:1px solid var(--accent);grid-column:1/-1;flex-direction:row;justify-content:center;gap:8px;font-size:13px;padding:14px;}
 
-  /* TOAST */
-  .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:14px; font-weight:600; opacity:0; transition:all .3s; z-index:100; white-space:nowrap; pointer-events:none; }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  .toast.success { border-color:var(--green); color:var(--green); }
-  .toast.error { border-color:var(--accent); color:var(--accent); }
+/* NOTE SCREEN */
+#screen-note{background:var(--bg);}
+.note-body{flex:1;display:flex;flex-direction:column;padding:12px 16px 16px;gap:10px;}
+.note-ta{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;font-size:14px;color:var(--text);resize:none;outline:none;font-family:'Courier New',monospace;line-height:1.7;min-height:180px;}
+.note-ta:focus{border-color:var(--accent);}
+.voice-btn{padding:16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;}
+.voice-btn.on{background:rgba(138,154,74,.15);border-color:var(--accent);color:var(--accent2);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.save-btn{padding:16px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;}
 
-  /* N8N CONFIG */
-  .config-row { padding:8px 20px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
-  .config-dot { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; }
-  .config-dot.connected { background:var(--green); }
-  .config-label { font-size:12px; color:var(--muted); }
-  .config-btn { margin-left:auto; padding:4px 10px; border-radius:8px; background:var(--surface); border:1px solid var(--border); color:var(--muted); font-size:11px; cursor:pointer; }
+/* OFFER SCREEN */
+#screen-offer{background:var(--bg);}
+.offer-scroll{flex:1;overflow-y:auto;padding:8px 16px;scrollbar-width:none;}
+.offer-scroll::-webkit-scrollbar{display:none;}
+.ocard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .1s;}
+.ocard:active{transform:scale(.98);}
+.ocard.sel{border-color:var(--accent);border-left-color:var(--accent2);background:var(--surface2);}
+.otitle{font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;}
+.odesc{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5;letter-spacing:.3px;}
+.oprice{font-size:18px;font-weight:700;color:var(--accent3);margin-top:8px;letter-spacing:1px;}
+.otag{display:inline-block;padding:2px 7px;border-radius:var(--radius);background:var(--surface3);border:1px solid var(--border2);font-size:10px;color:var(--dim);margin-top:4px;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
+.send-btn{margin:0 16px 16px;padding:16px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;width:calc(100%-32px);font-family:inherit;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
+.send-btn:disabled{opacity:.3;cursor:default;}
 
-  /* SETTINGS MODAL */
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .25s; }
-  .modal-overlay.open { opacity:1; pointer-events:all; }
-  .modal-sheet { background:var(--surface); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; transform:translateY(100%); transition:transform .3s cubic-bezier(.4,0,.2,1); }
-  .modal-overlay.open .modal-sheet { transform:translateY(0); }
-  .modal-title { font-size:18px; font-weight:800; margin-bottom:20px; }
-  .modal-input-label { font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.6px; }
-  .modal-input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; font-size:14px; color:var(--text); outline:none; margin-bottom:14px; font-family:inherit; }
-  .modal-input:focus { border-color:var(--accent); }
-  .modal-save { width:100%; padding:16px; border-radius:14px; background:var(--accent); border:none; color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
+/* SETTINGS */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius2) var(--radius2) 0 0;padding:20px 16px 36px;width:100%;transform:translateY(100%);transition:transform .25s;}
+.modal-bg.open .modal{transform:translateY(0);}
+.modal-title{font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+.mlbl{font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.minput{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 12px;font-size:13px;color:var(--text);outline:none;margin-bottom:10px;font-family:'Courier New',monospace;}
+.minput:focus{border-color:var(--accent);}
+.msave{width:100%;padding:14px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;}
+
+/* TOAST */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0;transition:all .25s;z-index:100;white-space:nowrap;pointer-events:none;font-family:inherit;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--accent);color:var(--accent2);}
+.toast.err{border-color:var(--red);color:#e74c3c;}
 </style>
 </head>
 <body>
 
-<!-- ===== LIST SCREEN ===== -->
+<!-- LIST -->
 <div id="screen-list" class="screen">
   <div class="list-top">
-    <h1>RepRunner 🏃</h1>
-    <div class="sub" id="list-sub">Ładowanie leadów...</div>
+    <div class="brand">// field ops terminal</div>
+    <h1>RepRunner</h1>
+    <div class="blade-sub" id="list-sub">inicjalizacja...</div>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-  <div class="progress-label" id="progress-label"></div>
-
-  <div class="filter-row">
-    <div class="filter-chip active" onclick="setFilter('all',this)">Wszystkie</div>
-    <div class="filter-chip" onclick="setFilter('open',this)">Open</div>
-    <div class="filter-chip" onclick="setFilter('notatka',this)">Bez notatki</div>
-    <div class="filter-chip" onclick="setFilter('oferta',this)">Oferta</div>
+  <div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-label" id="prog-lbl"></div>
   </div>
-
+  <div class="filters">
+    <div class="chip on" onclick="setFilter('all',this)">Wszystkie</div>
+    <div class="chip" onclick="setFilter('open',this)">Open</div>
+    <div class="chip" onclick="setFilter('nonote',this)">Bez notatki</div>
+    <div class="chip" onclick="setFilter('offer',this)">Oferta</div>
+    <div class="chip" onclick="setFilter('warn',this)">Uwaga</div>
+  </div>
   <div class="lead-list" id="lead-list"></div>
-
-  <button class="fab" onclick="openSettings()">⚙️</button>
+  <button class="fab" onclick="openCfg()">⚙</button>
 </div>
 
-<!-- ===== DETAIL SCREEN ===== -->
+<!-- DETAIL -->
 <div id="screen-detail" class="screen hidden">
-  <div class="header">
-    <button class="header-back" onclick="goBack()">←</button>
+  <div class="hdr">
+    <button class="hdr-back" onclick="goBack()">←</button>
     <div>
-      <div class="header-title" id="d-counter"></div>
-      <div class="header-sub" id="d-progress-text"></div>
+      <div class="hdr-title" id="d-title"></div>
+      <div class="hdr-sub" id="d-sub"></div>
     </div>
   </div>
-  <div style="flex:1;overflow-y:auto;scrollbar-width:none;">
-    <div class="detail-hero">
-      <div class="detail-avatar-big" id="d-avatar"></div>
-      <div class="detail-name" id="d-name"></div>
-      <div class="detail-firma" id="d-firma"></div>
-      <div class="detail-tags" id="d-tags"></div>
+  <div class="det-scroll">
+    <div class="det-hero">
+      <div class="det-ava" id="d-ava"></div>
+      <div class="det-name" id="d-name"></div>
+      <div class="det-firma" id="d-firma"></div>
+      <div class="det-tags" id="d-tags"></div>
     </div>
-
-    <div class="info-grid">
-      <div class="info-row"><span class="info-label">📍 Miasto</span><span class="info-val" id="d-miasto">—</span></div>
-      <div class="info-row"><span class="info-label">📧 Email</span><span class="info-val" id="d-email" style="color:var(--blue);font-size:12px;">—</span></div>
-      <div class="info-row"><span class="info-label">📦 Kiedy zakup</span><span class="info-val" id="d-kiedy">—</span></div>
-      <div class="info-row"><span class="info-label">📋 Oferta</span><span class="info-val" id="d-oferta">—</span></div>
+    <div class="info-block">
+      <div class="irow"><span class="ilabel">Miasto</span><span class="ival" id="d-miasto"></span></div>
+      <div class="irow"><span class="ilabel">Email</span><span class="ival em" id="d-email"></span></div>
+      <div class="irow"><span class="ilabel">Oferta</span><span class="ival" id="d-oferta"></span></div>
     </div>
-
-    <div class="notatka-box">
-      <div class="notatka-label">Notatka</div>
-      <div class="notatka-text" id="d-notatka"><span class="notatka-empty">Brak notatki</span></div>
+    <div class="note-block">
+      <div class="note-lbl">// notatka</div>
+      <div class="note-val" id="d-note"></div>
     </div>
-
     <div class="actions">
-      <button class="btn btn-call" id="btn-call" onclick="callLead()">
-        <span class="btn-icon">📞</span><span id="call-label">Zadzwoń</span>
+      <button class="btn btn-call" onclick="callLead()">
+        <span class="btn-icon">📞</span><span id="call-num">Zadzwoń</span>
       </button>
-      <button class="btn btn-note" onclick="openNote()">
-        <span class="btn-icon">🎙️</span><span>Notatka</span>
+      <button class="btn btn-sec" onclick="openNote()">
+        <span class="btn-icon">🎙</span><span>Notatka</span>
       </button>
-      <button class="btn btn-offer" onclick="openOffer()">
-        <span class="btn-icon">📩</span><span>Wyślij ofertę</span>
+      <button class="btn btn-sec" onclick="openOffer()">
+        <span class="btn-icon">📩</span><span>Oferta</span>
       </button>
-      <button class="btn btn-reminder" onclick="setReminder()">
-        <span class="btn-icon">⏰</span><span>Przypomnienie</span>
+      <button class="btn btn-sec" onclick="doReminder()">
+        <span class="btn-icon">⏰</span><span>Przypomnij</span>
       </button>
-      <button class="btn btn-next" onclick="nextLead()" style="grid-column:1/-1;flex-direction:row;gap:10px;justify-content:center;font-size:16px;">
-        <span>Następny lead</span><span>→</span>
+      <button class="btn btn-next" onclick="nextLead()">
+        <span>Następny</span><span>→</span>
       </button>
     </div>
   </div>
 </div>
 
-<!-- ===== NOTE SCREEN ===== -->
+<!-- NOTE -->
 <div id="screen-note" class="screen hidden">
-  <div class="header">
-    <button class="header-back" onclick="closeNote()">←</button>
+  <div class="hdr">
+    <button class="hdr-back" onclick="closeNote()">←</button>
     <div>
-      <div class="header-title">Notatka głosowa</div>
-      <div class="header-sub" id="note-for"></div>
+      <div class="hdr-title">// notatka głosowa</div>
+      <div class="hdr-sub" id="note-for"></div>
     </div>
   </div>
   <div class="note-body">
-    <textarea class="note-textarea" id="note-text" placeholder="Wpisz lub podyktuj notatkę..."></textarea>
-    <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">
-      <span id="voice-icon">🎙️</span><span id="voice-label">Naciśnij i mów</span>
+    <textarea class="note-ta" id="note-ta" placeholder="Wpisz lub podyktuj..."></textarea>
+    <button class="voice-btn" id="vbtn" onclick="toggleVoice()">
+      <span id="vicon">🎙</span><span id="vlbl">Naciśnij i mów</span>
     </button>
-    <button class="save-btn" onclick="saveNote()">💾 Zapisz notatkę</button>
+    <button class="save-btn" onclick="saveNote()">Zapisz notatkę</button>
   </div>
 </div>
 
-<!-- ===== OFFER SCREEN ===== -->
+<!-- OFFER -->
 <div id="screen-offer" class="screen hidden">
-  <div class="header">
-    <button class="header-back" onclick="closeOffer()">←</button>
+  <div class="hdr">
+    <button class="hdr-back" onclick="closeOffer()">←</button>
     <div>
-      <div class="header-title">Wybierz ofertę</div>
-      <div class="header-sub" id="offer-for"></div>
+      <div class="hdr-title">// wybierz ofertę</div>
+      <div class="hdr-sub" id="offer-for"></div>
     </div>
   </div>
-  <div class="offer-body" id="offer-list"></div>
-  <button class="send-btn" onclick="sendOffer()" id="send-offer-btn" disabled style="opacity:.4">📩 Wyślij ofertę</button>
+  <div class="offer-scroll" id="offer-list"></div>
+  <button class="send-btn" id="send-btn" onclick="sendOffer()" disabled>Wyślij ofertę</button>
 </div>
 
-<!-- ===== SETTINGS MODAL ===== -->
-<div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
-  <div class="modal-sheet">
-    <div class="modal-title">⚙️ Ustawienia n8n</div>
-    <div class="modal-input-label">Webhook — notatka</div>
-    <input class="modal-input" id="cfg-note" type="url" placeholder="https://n8n.twoja-domena.com/webhook/note">
-    <div class="modal-input-label">Webhook — oferta</div>
-    <input class="modal-input" id="cfg-offer" type="url" placeholder="https://n8n.twoja-domena.com/webhook/offer">
-    <div class="modal-input-label">Webhook — przypomnienie</div>
-    <input class="modal-input" id="cfg-reminder" type="url" placeholder="https://n8n.twoja-domena.com/webhook/reminder">
-    <div class="modal-input-label">Twój email (nadawca ofert)</div>
-    <input class="modal-input" id="cfg-email" type="email" placeholder="krystian@vertextrading.eu">
-    <button class="modal-save" onclick="saveSettings()">Zapisz</button>
+<!-- SETTINGS -->
+<div class="modal-bg" id="cfg-modal" onclick="closeCfg(event)">
+  <div class="modal">
+    <div class="modal-title">// konfiguracja n8n</div>
+    <div class="mlbl">Webhook — notatka</div>
+    <input class="minput" id="c-note" type="url" placeholder="https://n8n.../webhook/note">
+    <div class="mlbl">Webhook — oferta</div>
+    <input class="minput" id="c-offer" type="url" placeholder="https://n8n.../webhook/offer">
+    <div class="mlbl">Webhook — przypomnienie</div>
+    <input class="minput" id="c-rem" type="url" placeholder="https://n8n.../webhook/reminder">
+    <div class="mlbl">Twój email</div>
+    <input class="minput" id="c-email" type="email" placeholder="krystian@vertextrading.eu">
+    <button class="msave" onclick="saveCfg()">Zapisz</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== DATA ====================
-const SAMPLE_LEADS = [
-  {idx:1,imie:"Adam",phone:"+48 502 087 148",email:"atko2@wp.pl",miasto:"Rybnik",kiedy:"Do 6 miesięcy",firma:"Blacharstwo",notatka:"Cienkie elementy do wentylacji",oferta_status:"oferta wysłana 09/04",status:"Open"},
-  {idx:2,imie:"Marcin",phone:"+48 604 097 228",email:"Marcinzareba@piczta.fm",miasto:"Bytom",kiedy:"Do 3 miesięcy",firma:"Ślusarstwo Zrębski",notatka:"Interesuje go 2kW",oferta_status:"oferta wysłana 03/04",status:"Open"},
-  {idx:3,imie:"Tomasz",phone:"+48 881 672 929",email:"tomasz.krajczyk@kania.net.pl",miasto:"Kraków",kiedy:"Do 3 miesięcy",firma:"Kania Metal",notatka:"4w1, spawanie alum.",oferta_status:"oferta wysłana 07/04",status:"Open"},
-  {idx:4,imie:"Andrzej",phone:"+48 574 630 515",email:"dsapinska@op.pl",miasto:"Żywiec",kiedy:"Do 6 miesięcy",firma:"",notatka:"",oferta_status:"oferta wysłana 09/04",status:"Open"},
-  {idx:7,imie:"Jerzy",phone:"+48 662 282 942",email:"j.marciniak8@interia.pl",miasto:"Warszawa",kiedy:"Do 3 miesięcy",firma:"Budownictwo Marciniak",notatka:"",oferta_status:"oferta wysłana 07/04",status:"Open"},
-  {idx:9,imie:"Krystian",phone:"+48 605 947 796",email:"krystiandesign85@gmail.com",miasto:"Katowice",kiedy:"Do 3 miesięcy",firma:"KD Metal",notatka:"",oferta_status:"oferta wysłana 07/04",status:"Open"},
-  {idx:10,imie:"Grzegorz",phone:"+48 601 837 854",email:"gregor001@tlen.pl",miasto:"Zielona Góra",kiedy:"Do 3 miesięcy",firma:"",notatka:"",oferta_status:"",status:"Open"},
-  {idx:11,imie:"Witold",phone:"+48 604 765 512",email:"wgawior58@wp.pl",miasto:"Kielce",kiedy:"Do 3 miesięcy",firma:"",notatka:"",oferta_status:"",status:"Open"},
-  {idx:16,imie:"Marek",phone:"+48 792 909 090",email:"biuro@enterled.pl",miasto:"Bielsko-Biała",kiedy:"Do 3 miesięcy",firma:"Enterled",notatka:"",oferta_status:"oferta wysłana 09/04",status:"Open"},
-  {idx:17,imie:"Tomasz",phone:"+48 727 789 183",email:"sikorskitomasz1953@gmail.com",miasto:"Poznań",kiedy:"Do 6 miesięcy",firma:"",notatka:"",oferta_status:"dzwoń popołudniu",status:"Open"},
-  {idx:18,imie:"Marian",phone:"+48 513 014 636",email:"mariusz.michalski9@icloud.com",miasto:"Szczecin",kiedy:"",firma:"",notatka:"Ofertę A&B CP + 4w1",oferta_status:"oferta wysłana 07/04",status:"Open"},
-  {idx:19,imie:"Robert",phone:"+48 785 234 662",email:"przybysz547@gmail.com",miasto:"Bydgoszcz",kiedy:"Pilne",firma:"Roben Dach",notatka:"Nie odbiera — próbować rano",oferta_status:"oferta wysłana 09/04",status:"Follow-up"},
-];
+const LEADS = [{"idx":1,"imie":"Tomas","phone":"+421 904 458 874","email":"jamesdurica@gmail.com","miasto":"Poprad","firma":"Tradstol","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":2,"imie":"Martin","phone":"+421 940 875 601","email":"krajco285.mk@gmail.com","miasto":"Hájske","firma":"Autoprofit Galanta","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":3,"imie":"Michal","phone":"+421 949 443 537","email":"takacsmuchal765@gmail.com","miasto":"Liptovsky Mikulas","firma":"Čo Ma Nezabije","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":4,"imie":"Bumi","phone":"+421 905 972 388","email":"bumisro3@gmail.com","miasto":"Kosice","firma":"Bumi team sro","notatka":"","oferta_status":"sent offer 09/04","status":"6800eur","kiedy":""},{"idx":5,"imie":"Ladislav","phone":"+421 949 335 096","email":"kolpetmarkovce@gmail.com","miasto":"Kosice","firma":"SZČO","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":6,"imie":"Jozef","phone":"+421 905 607 581","email":"krajmerjozef@gmail.com","miasto":"Bratislava","firma":"Kraintek sro","notatka":"","oferta_status":"sent offer 09/04","status":"wyslac oferte","kiedy":""},{"idx":7,"imie":"Ludovit","phone":"+421 910 984 907","email":"ludourbanik@centrum.sk","miasto":"Breza","firma":"Voľná noha","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":8,"imie":"Jozef","phone":"+421 907 554 889","email":"jozefpalko12345@gmail.com","miasto":"Malý Šariš","firma":"Súkromná osoba","notatka":"","oferta_status":"sent offer 09/04","status":"oferte wyslac","kiedy":""},{"idx":9,"imie":"Marek","phone":"+421 908 907 970","email":"marko.wlet@gmail.com","miasto":"Sielnica","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":10,"imie":"Ivan","phone":"+421 903 421 707","email":"capris009@gmail.com","miasto":"Bosaca","firma":"CAPRIS s.r.o","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":11,"imie":"Alexander","phone":"+421 944 271 204","email":"64lexis@gmail.com","miasto":"Sturovo","firma":"Národný energetický projekt","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":12,"imie":"Jaroslav","phone":"+421 907 976 017","email":"jaroslavrichnavsky@centrum.sk","miasto":"Richnava","firma":"Autoelektronika-Chiping","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":13,"imie":"Jaroslav","phone":"+421 918 517 997","email":"jarostritz@pobox.sk","miasto":"Lipovec","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":14,"imie":"Jozef","phone":"+421 904 825 391","email":"scasny37@gmail.com","miasto":"Senec","firma":"Multiplastservis","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":15,"imie":"Martin","phone":"+421 902 722 364","email":"martin.pallai@gmail.com","miasto":"Hažín","firma":"Betform","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":16,"imie":"Peter","phone":"+421 911 874 753","email":"nuttapeter@centrum.sk","miasto":"Babín","firma":"Štátny zvarač","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":17,"imie":"Jozef","phone":"+421 948 915 923","email":"tetto@tetto-strecha.eu","miasto":"Nové Zámky","firma":"Tetto strecha sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":18,"imie":"Radovan","phone":"+421 907 941 325","email":"servis.haniska@gmail.com","miasto":"Presov","firma":"Servis car s.r.o.","notatka":"","oferta_status":"sent offer 09/04","status":"prezentacja w maju","kiedy":""},{"idx":19,"imie":"Karol","phone":"+421 948 927 775","email":"karolkubalek9@gmail.com","miasto":"Handlová","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":20,"imie":"Jan","phone":"+421 903 534 597","email":"janmihalciak5871@gmail.com","miasto":"Kokava n/R","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":21,"imie":"Milan","phone":"+420 602 804 882","email":"rehna01@seznam.cz","miasto":"Ústí nad Labem","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":22,"imie":"Mirouš","phone":"+420 777 874 333","email":"andelinmexicky@gmail.com","miasto":"Praha","firma":"Slunéčko sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":23,"imie":"Václav","phone":"+420 607 804 881","email":"lavica107@gmail.com","miasto":"Nýřany","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":24,"imie":"Pavel","phone":"+420 777 832 541","email":"medakrtek@seznam.cz","miasto":"Hronov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":25,"imie":"Jaroslav","phone":"+420 607 234 380","email":"jak01@seznam.cz","miasto":"Praha","firma":"Kotana","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":26,"imie":"Petr","phone":"+420 739 691 859","email":"dobryprdy@seznam.cz","miasto":"Baška","firma":"Dílník","notatka":"","oferta_status":"za drogo","status":"Open","kiedy":""},{"idx":27,"imie":"Roman","phone":"+420 776 892 857","email":"rroubal@seznam.cz","miasto":"Kramolna","firma":"Autoslužby Radek Vik","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":28,"imie":"Zdeněk","phone":"+420 777 804 922","email":"zdeneksebek.sebi@gmail.com","miasto":"Mariánské Radčice","firma":"HOPI Klášterec","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":29,"imie":"Petr","phone":"+420 605 724 729","email":"petr.pape@seznam.cz","miasto":"Silheřovice","firma":"DSC","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":30,"imie":"Jan","phone":"+420 608 606 494","email":"jeifler@centrum.cz","miasto":"Vracov","firma":"Eifler bat og motor","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":31,"imie":"Pavel","phone":"+420 702 122 550","email":"zetnian@email.cz","miasto":"Praha","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":32,"imie":"Jaroslav","phone":"+420 777 153 358","email":"kubesa.czo@seznam.cz","miasto":"Zasova","firma":"Jaroslav Kubeša","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":33,"imie":"Radek","phone":"+420 603 354 081","email":"radek.risica@seznam.cz","miasto":"Halenkov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":34,"imie":"Mirek","phone":"+420 777 693 632","email":"miroslavlacek8@gmail.com","miasto":"Karviná","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":35,"imie":"Vladimír","phone":"+420 607 554 406","email":"lappy@seznam.cz","miasto":"Uhříněves","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":36,"imie":"George","phone":"+420 608 899 954","email":"sufu@volny.cz","miasto":"České Budějovice","firma":"Jiří Chvála","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":37,"imie":"Tomáš","phone":"+420 777 802 850","email":"tom.hubacek@seznam.cz","miasto":"Praha","firma":"Kurzylodnimotory","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":38,"imie":"David","phone":"+420 608 346 104","email":"slashman@seznam.cz","miasto":"Nýřany","firma":"Individual Contractor","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""}];
 
 const OFFERS = [
-  {id:"laser-2kw", title:"Laser Ciągły UC-CW2 2000W", desc:"Chłodzenie wodne · do metalu ciężkiego · spawalnictwo i czyszczenie", price:"31 000 PLN netto", tag:"Bestseller"},
-  {id:"laser-pulse-a3", title:"Laser Pulsacyjny CP-A3 300W", desc:"Chłodzenie powietrzem · mobilny · do warsztatów i lżejszych zastosowań", price:"29 000 PLN netto", tag:"Mobilny"},
-  {id:"laser-pulse-b3", title:"Laser Pulsacyjny CP-B3 300W", desc:"Briefcase · ultra mobilny · idealne do wyjazdów serwisowych", price:"28 000 PLN netto", tag:"Walizka"},
-  {id:"spawarka-4w1", title:"Spawarka 4w1 AI", desc:"Laser + MIG + TIG + elektroda · inteligentna regulacja · pełny zestaw", price:"na zapytanie", tag:"Combo"},
+  {id:"uc-cw2",title:"Laser Ciągły UC-CW2 2000W",desc:"Chłodzenie wodne · stal ciężka · spawalnictwo przemysłowe",price:"31 000 PLN",tag:"Top"},
+  {id:"cp-a3",title:"Laser Pulsacyjny CP-A3 300W",desc:"Chłodzenie powietrzem · mobilny · warsztaty i lżejsze zastosowania",price:"29 000 PLN",tag:"Mobilny"},
+  {id:"cp-b3",title:"Laser Pulsacyjny CP-B3 300W",desc:"Briefcase · ultra mobilny · idealne do wyjazdów",price:"28 000 PLN",tag:"Walizka"},
+  {id:"4w1",title:"Spawarka 4w1 AI",desc:"Laser + MIG + TIG + elektroda · pełny zestaw",price:"na zapytanie",tag:"Combo"},
 ];
 
-// ==================== STATE ====================
-let leads = [...SAMPLE_LEADS];
-let currentIdx = 0;
-let currentFilter = 'all';
-let selectedOffer = null;
-let recognition = null;
-let isRecording = false;
-let cfg = {noteWebhook:'', offerWebhook:'', reminderWebhook:'', email:''};
+const WARN_STATUSES = ['nie odbiera','error','za drogo'];
 
-try { const s = localStorage.getItem('sd_cfg'); if(s) cfg = {...cfg, ...JSON.parse(s)}; } catch(e){}
+let leads = LEADS.map(l => ({...l}));
+let curIdx = 0;
+let curFilter = 'all';
+let selOffer = null;
+let rec = null;
+let isRec = false;
+let cfg = {nw:'',ow:'',rw:'',em:''};
 
-function loadSavedNotes() {
+try { const s = localStorage.getItem('rr_cfg'); if(s) cfg = {...cfg,...JSON.parse(s)}; } catch(e){}
+
+function loadNotes() {
   try {
     const s = localStorage.getItem('rr_notes');
     if(!s) return;
-    const notes = JSON.parse(s);
-    leads.forEach(l => { if(notes[l.idx] !== undefined) l.notatka = notes[l.idx]; });
+    const n = JSON.parse(s);
+    leads.forEach(l => { if(n[l.idx] !== undefined) l.notatka = n[l.idx]; });
   } catch(e){}
 }
-function persistNote(idx, text) {
+function saveNoteLocal(idx, text) {
   try {
     const s = localStorage.getItem('rr_notes');
-    const notes = s ? JSON.parse(s) : {};
-    notes[idx] = text;
-    localStorage.setItem('rr_notes', JSON.stringify(notes));
+    const n = s ? JSON.parse(s) : {};
+    n[idx] = text;
+    localStorage.setItem('rr_notes', JSON.stringify(n));
   } catch(e){}
 }
-loadSavedNotes();
+loadNotes();
 
-// ==================== FILTERING ====================
-function filteredLeads() {
-  if(currentFilter === 'open') return leads.filter(l => l.status === 'Open');
-  if(currentFilter === 'notatka') return leads.filter(l => !l.notatka);
-  if(currentFilter === 'oferta') return leads.filter(l => l.oferta_status && l.oferta_status.includes('wysłana'));
+function filtered() {
+  if(curFilter === 'open') return leads.filter(l => l.status === 'Open');
+  if(curFilter === 'nonote') return leads.filter(l => !l.notatka);
+  if(curFilter === 'offer') return leads.filter(l => l.oferta_status && l.oferta_status.toLowerCase().includes('sent'));
+  if(curFilter === 'warn') return leads.filter(l => WARN_STATUSES.some(w => l.status.toLowerCase().includes(w)));
   return leads;
 }
 
 function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
+  curFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
   renderList();
 }
 
-// ==================== RENDER LIST ====================
-function renderList() {
-  const fl = filteredLeads();
-  const done = leads.filter(l => l.notatka).length;
-  document.getElementById('list-sub').textContent = `${fl.length} leadów · ${done} z notatką`;
-  document.getElementById('progress-fill').style.width = `${Math.round(done/leads.length*100)}%`;
-  document.getElementById('progress-label').textContent = `${done} / ${leads.length} obrobionych`;
+function getBadge(l) {
+  if(l.notatka) return {cls:'b-note', txt:'✓ nota'};
+  if(WARN_STATUSES.some(w => l.status.toLowerCase().includes(w))) return {cls:'b-warn', txt:'uwaga'};
+  if(l.oferta_status && l.oferta_status.toLowerCase().includes('sent')) return {cls:'b-offer', txt:'oferta'};
+  return {cls:'b-open', txt:'open'};
+}
 
-  const ul = document.getElementById('lead-list');
-  ul.innerHTML = fl.map((l,i) => {
-    const init = l.imie[0].toUpperCase();
-    const badge = l.notatka ? 'badge-done' : (l.oferta_status ? 'badge-offer' : 'badge-open');
-    const badgeText = l.notatka ? 'Notatka ✓' : (l.oferta_status ? 'Oferta' : 'Open');
-    const meta = [l.firma, l.miasto].filter(Boolean).join(' · ') || l.kiedy || '—';
-    return `<div class="lead-card" onclick="openLead(${leads.indexOf(l)})">
-      <div class="lead-avatar">${init}</div>
-      <div class="lead-info">
-        <div class="lead-name">${l.imie}${l.firma ? ' — '+l.firma : ''}</div>
-        <div class="lead-meta">${meta}</div>
+function renderList() {
+  const fl = filtered();
+  const done = leads.filter(l => l.notatka).length;
+  document.getElementById('list-sub').textContent = `${fl.length} targets · ${done} z notatką`;
+  document.getElementById('prog').style.width = Math.round(done/leads.length*100)+'%';
+  document.getElementById('prog-lbl').textContent = `>> ${done} / ${leads.length} obrobionych`;
+
+  document.getElementById('lead-list').innerHTML = fl.map(l => {
+    const b = getBadge(l);
+    const meta = [l.firma, l.miasto].filter(Boolean).join(' · ') || l.status || '—';
+    return `<div class="lcard ${l.notatka?'has-note':''}" onclick="openLead(${leads.indexOf(l)})">
+      <div class="ava">${l.imie[0].toUpperCase()}</div>
+      <div class="linfo">
+        <div class="lname">${l.imie}${l.firma?' — '+l.firma:''}</div>
+        <div class="lmeta">${meta}</div>
       </div>
-      <div class="lead-badge ${badge}">${badgeText}</div>
+      <div class="badge ${b.cls}">${b.txt}</div>
     </div>`;
   }).join('');
 }
 
-// ==================== LEAD DETAIL ====================
 function openLead(i) {
-  currentIdx = i;
+  curIdx = i;
   showDetail();
 }
 
 function showDetail() {
-  const l = leads[currentIdx];
-  const fl = filteredLeads();
-  const posInFilter = fl.indexOf(l);
-
-  document.getElementById('d-counter').textContent = `${l.imie} · #${l.idx}`;
-  document.getElementById('d-progress-text').textContent = `Lead ${posInFilter+1} z ${fl.length}`;
-  document.getElementById('d-avatar').textContent = l.imie[0].toUpperCase();
+  const l = leads[curIdx];
+  const fl = filtered();
+  const pos = fl.indexOf(l);
+  document.getElementById('d-title').textContent = l.imie.toUpperCase() + ' · #' + l.idx;
+  document.getElementById('d-sub').textContent = `target ${pos+1} of ${fl.length}`;
+  document.getElementById('d-ava').textContent = l.imie[0].toUpperCase();
   document.getElementById('d-name').textContent = l.imie;
   document.getElementById('d-firma').textContent = l.firma || '—';
   document.getElementById('d-miasto').textContent = l.miasto || '—';
   document.getElementById('d-email').textContent = l.email || '—';
-  document.getElementById('d-kiedy').textContent = l.kiedy || '—';
-  document.getElementById('d-oferta').textContent = l.oferta_status || 'Brak';
-  document.getElementById('d-notatka').innerHTML = l.notatka
+  document.getElementById('d-oferta').textContent = l.oferta_status || '—';
+  document.getElementById('d-note').innerHTML = l.notatka
     ? `<span>${l.notatka}</span>`
-    : `<span class="notatka-empty">Brak notatki — nagraj po rozmowie</span>`;
-  document.getElementById('call-label').textContent = l.phone;
-
-  const tags = document.getElementById('d-tags');
-  tags.innerHTML = [l.status, l.kiedy].filter(Boolean).map(t => `<span class="tag">${t}</span>`).join('');
-
-  showScreen('screen-detail', 'screen-list');
+    : `<span class="note-empty">// brak notatki</span>`;
+  document.getElementById('call-num').textContent = l.phone;
+  const tags = [l.status, l.kiedy].filter(Boolean);
+  document.getElementById('d-tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+  showScreen('screen-detail','screen-list');
 }
 
 function callLead() {
-  const l = leads[currentIdx];
-  const phone = l.phone.replace(/\s/g,'');
-  window.location.href = `tel:${phone}`;
+  const p = leads[curIdx].phone.replace(/\s/g,'');
+  window.location.href = 'tel:'+p;
 }
 
 function nextLead() {
-  const fl = filteredLeads();
-  const cur = fl.indexOf(leads[currentIdx]);
-  if(cur < fl.length - 1) {
-    currentIdx = leads.indexOf(fl[cur+1]);
+  const fl = filtered();
+  const pos = fl.indexOf(leads[curIdx]);
+  if(pos < fl.length-1) {
+    curIdx = leads.indexOf(fl[pos+1]);
     showDetail();
   } else {
-    showToast('✅ Koniec listy!', 'success');
+    toast('>> koniec listy', 'ok');
   }
 }
 
 function goBack() {
-  showScreen('screen-list', 'screen-detail', true);
+  showScreen('screen-list','screen-detail',true);
   renderList();
 }
 
-// ==================== NOTE ====================
+// NOTE
 function openNote() {
-  const l = leads[currentIdx];
+  const l = leads[curIdx];
   document.getElementById('note-for').textContent = l.imie + (l.firma ? ' · '+l.firma : '');
-  document.getElementById('note-text').value = l.notatka || '';
-  showScreen('screen-note', 'screen-detail');
+  document.getElementById('note-ta').value = l.notatka || '';
+  showScreen('screen-note','screen-detail');
 }
-
-function closeNote() {
-  showScreen('screen-detail', 'screen-note', true);
-}
+function closeNote() { stopVoice(); showScreen('screen-detail','screen-note',true); }
 
 function toggleVoice() {
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    showToast('Przeglądarka nie wspiera mowy. Wpisz ręcznie.', 'error');
-    return;
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    toast('>> brak API mowy w tej przeglądarce','err'); return;
   }
-  if(isRecording) { stopVoice(); return; }
-  startVoice();
+  isRec ? stopVoice() : startVoice();
 }
 
 function startVoice() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.lang = 'pl-PL';
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  const existing = document.getElementById('note-text').value.trim();
-  let finalTranscript = existing;
-  let lastResultIndex = 0;
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  rec = new SR();
+  rec.lang = 'pl-PL';
+  rec.continuous = true;
+  rec.interimResults = true;
 
-  recognition.onresult = (e) => {
+  // FIX: capture baseline text once, never re-read from textarea during session
+  const baseline = document.getElementById('note-ta').value.trim();
+  let final = baseline;
+
+  rec.onresult = e => {
     let interim = '';
     for(let i = e.resultIndex; i < e.results.length; i++) {
       const t = e.results[i][0].transcript.trim();
-      if(e.results[i].isFinal) {
-        finalTranscript += (finalTranscript ? ' ' : '') + t;
-      } else {
-        interim = t;
-      }
+      if(e.results[i].isFinal) final += (final?' ':'')+t;
+      else interim = t;
     }
-    document.getElementById('note-text').value = finalTranscript + (interim ? ' … ' + interim : '');
+    // show interim as preview only, never mixed into final
+    document.getElementById('note-ta').value = final + (interim ? '\n[…] '+interim : '');
   };
-  recognition.onend = () => { isRecording = false; updateVoiceUI(); };
-  recognition.start();
-  isRecording = true;
-  updateVoiceUI();
+
+  rec.onend = () => {
+    // clean up interim marker on stop
+    const ta = document.getElementById('note-ta');
+    ta.value = ta.value.replace(/\n\[…\].*$/,'');
+    isRec = false; updateVUI();
+  };
+  rec.onerror = () => { isRec = false; updateVUI(); };
+  rec.start();
+  isRec = true; updateVUI();
 }
 
 function stopVoice() {
-  if(recognition) recognition.stop();
-  isRecording = false;
-  updateVoiceUI();
+  if(rec) rec.stop();
+  isRec = false; updateVUI();
 }
 
-function updateVoiceUI() {
-  const btn = document.getElementById('voice-btn');
-  document.getElementById('voice-icon').textContent = isRecording ? '⏹️' : '🎙️';
-  document.getElementById('voice-label').textContent = isRecording ? 'Nagrywam... naciśnij by zatrzymać' : 'Naciśnij i mów';
-  btn.classList.toggle('active', isRecording);
+function updateVUI() {
+  document.getElementById('vicon').textContent = isRec ? '⏹' : '🎙';
+  document.getElementById('vlbl').textContent = isRec ? 'Nagrywam — naciśnij by zatrzymać' : 'Naciśnij i mów';
+  document.getElementById('vbtn').classList.toggle('on', isRec);
 }
 
 async function saveNote() {
-  const text = document.getElementById('note-text').value.trim();
-  if(!text) { showToast('Notatka jest pusta', 'error'); return; }
-  const l = leads[currentIdx];
+  stopVoice();
+  const text = document.getElementById('note-ta').value.replace(/\n\[…\].*$/,'').trim();
+  if(!text){ toast('>> notatka pusta','err'); return; }
+  const l = leads[curIdx];
   l.notatka = text;
-  persistNote(l.idx, text);
-
-  if(cfg.noteWebhook) {
+  saveNoteLocal(l.idx, text);
+  if(cfg.nw) {
     try {
-      await fetch(cfg.noteWebhook, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({idx: l.idx, imie: l.imie, firma: l.firma, phone: l.phone, email: l.email, notatka: text, timestamp: new Date().toISOString()})
-      });
-      showToast('✅ Notatka zapisana w Google Sheet', 'success');
-    } catch(e) {
-      showToast('⚠️ Zapisano lokalnie (brak połączenia z n8n)', '');
-    }
-  } else {
-    showToast('📝 Zapisano lokalnie', 'success');
-  }
+      await fetch(cfg.nw,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,phone:l.phone,email:l.email,notatka:text,ts:new Date().toISOString()})});
+      toast('>> notatka → google sheet','ok');
+    } catch(e){ toast('>> zapisano lokalnie','ok'); }
+  } else { toast('>> zapisano lokalnie','ok'); }
   closeNote();
   showDetail();
 }
 
-// ==================== OFFER ====================
+// OFFER
 function openOffer() {
-  const l = leads[currentIdx];
-  document.getElementById('offer-for').textContent = `Wyślij do: ${l.imie} · ${l.email}`;
-  selectedOffer = null;
-  document.getElementById('send-offer-btn').disabled = true;
-  document.getElementById('send-offer-btn').style.opacity = '.4';
-
+  const l = leads[curIdx];
+  document.getElementById('offer-for').textContent = '→ '+l.imie+' · '+l.email;
+  selOffer = null;
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
   document.getElementById('offer-list').innerHTML = OFFERS.map(o =>
-    `<div class="offer-card" id="oc-${o.id}" onclick="selectOffer('${o.id}')">
+    `<div class="ocard" id="oc-${o.id}" onclick="selOfferFn('${o.id}')">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div class="offer-title">${o.title}</div>
-        <span class="lead-badge badge-open" style="font-size:10px;margin-left:8px;flex-shrink:0">${o.tag}</span>
+        <div class="otitle">${o.title}</div>
+        <span class="otag">${o.tag}</span>
       </div>
-      <div class="offer-desc">${o.desc}</div>
-      <div class="offer-price">${o.price}</div>
+      <div class="odesc">${o.desc}</div>
+      <div class="oprice">${o.price}</div>
     </div>`
   ).join('');
-
-  showScreen('screen-offer', 'screen-detail');
+  showScreen('screen-offer','screen-detail');
 }
 
-function selectOffer(id) {
-  selectedOffer = OFFERS.find(o => o.id === id);
-  document.querySelectorAll('.offer-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('oc-'+id).classList.add('selected');
-  document.getElementById('send-offer-btn').disabled = false;
-  document.getElementById('send-offer-btn').style.opacity = '1';
+function selOfferFn(id) {
+  selOffer = OFFERS.find(o => o.id===id);
+  document.querySelectorAll('.ocard').forEach(c => c.classList.remove('sel'));
+  document.getElementById('oc-'+id).classList.add('sel');
+  document.getElementById('send-btn').disabled = false;
 }
 
-function closeOffer() {
-  showScreen('screen-detail', 'screen-offer', true);
-}
+function closeOffer() { showScreen('screen-detail','screen-offer',true); }
 
 async function sendOffer() {
-  if(!selectedOffer) return;
-  const l = leads[currentIdx];
-
-  if(cfg.offerWebhook) {
+  if(!selOffer) return;
+  const l = leads[curIdx];
+  if(cfg.ow) {
     try {
-      await fetch(cfg.offerWebhook, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({idx: l.idx, imie: l.imie, firma: l.firma, email: l.email, offer_id: selectedOffer.id, offer_title: selectedOffer.title, sender_email: cfg.email, timestamp: new Date().toISOString()})
-      });
-      l.oferta_status = 'oferta wysłana ' + new Date().toLocaleDateString('pl');
-      showToast('📩 Oferta wysłana!', 'success');
-    } catch(e) {
-      showToast('⚠️ Brak połączenia z n8n', 'error');
-    }
-  } else {
-    showToast('⚙️ Skonfiguruj webhook oferty w ustawieniach', 'error');
-  }
-  closeOffer();
-  showDetail();
+      await fetch(cfg.ow,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,email:l.email,
+          offer_id:selOffer.id,offer_title:selOffer.title,sender:cfg.em,ts:new Date().toISOString()})});
+      l.oferta_status = 'sent '+new Date().toLocaleDateString('pl');
+      toast('>> oferta wysłana','ok');
+    } catch(e){ toast('>> brak połączenia n8n','err'); }
+  } else { toast('>> skonfiguruj webhook oferty','err'); }
+  closeOffer(); showDetail();
 }
 
-// ==================== REMINDER ====================
-function setReminder() {
-  const l = leads[currentIdx];
-  const time = prompt(`Kiedy zadzwonić do ${l.imie}?\n(np. jutro 12:15 / 2026-05-10 09:00)`);
-  if(!time) return;
-
-  if(cfg.reminderWebhook) {
-    fetch(cfg.reminderWebhook, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({idx: l.idx, imie: l.imie, phone: l.phone, email: l.email, reminder_text: time, timestamp: new Date().toISOString()})
-    }).then(() => showToast('⏰ Przypomnienie ustawione', 'success'))
-      .catch(() => showToast('⚠️ Brak połączenia z n8n', 'error'));
-  } else {
-    showToast('⏰ Zapisano: ' + time, 'success');
-  }
+// REMINDER
+function doReminder() {
+  const l = leads[curIdx];
+  const t = prompt(`Kiedy zadzwonić do ${l.imie}?\n(np. jutro 10:00)`);
+  if(!t) return;
+  if(cfg.rw) {
+    fetch(cfg.rw,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({idx:l.idx,imie:l.imie,phone:l.phone,reminder:t,ts:new Date().toISOString()})})
+      .then(()=>toast('>> reminder ustawiony','ok'))
+      .catch(()=>toast('>> brak połączenia n8n','err'));
+  } else { toast('>> '+t,'ok'); }
 }
 
-// ==================== SCREENS ====================
-function showScreen(showId, hideId, reverse) {
-  const show = document.getElementById(showId);
-  const hide = document.getElementById(hideId);
-  if(reverse) {
-    hide.classList.add('hidden');
-    show.classList.remove('hidden');
-    show.classList.remove('slide-left');
-  } else {
-    hide.classList.add('slide-left');
-    show.classList.remove('hidden');
-  }
+// SCREENS
+function showScreen(showId, hideId, back) {
+  const s = document.getElementById(showId);
+  const h = document.getElementById(hideId);
+  if(back){ h.classList.add('hidden'); s.classList.remove('hidden','slide-left'); }
+  else { h.classList.add('slide-left'); s.classList.remove('hidden'); }
 }
 
-// ==================== SETTINGS ====================
-function openSettings() {
-  document.getElementById('cfg-note').value = cfg.noteWebhook;
-  document.getElementById('cfg-offer').value = cfg.offerWebhook;
-  document.getElementById('cfg-reminder').value = cfg.reminderWebhook;
-  document.getElementById('cfg-email').value = cfg.email;
-  document.getElementById('settings-modal').classList.add('open');
+// CONFIG
+function openCfg() {
+  document.getElementById('c-note').value = cfg.nw;
+  document.getElementById('c-offer').value = cfg.ow;
+  document.getElementById('c-rem').value = cfg.rw;
+  document.getElementById('c-email').value = cfg.em;
+  document.getElementById('cfg-modal').classList.add('open');
+}
+function closeCfg(e) { if(e.target===document.getElementById('cfg-modal')) document.getElementById('cfg-modal').classList.remove('open'); }
+function saveCfg() {
+  cfg = {nw:document.getElementById('c-note').value.trim(),
+         ow:document.getElementById('c-offer').value.trim(),
+         rw:document.getElementById('c-rem').value.trim(),
+         em:document.getElementById('c-email').value.trim()};
+  try { localStorage.setItem('rr_cfg',JSON.stringify(cfg)); } catch(e){}
+  document.getElementById('cfg-modal').classList.remove('open');
+  toast('>> config saved','ok');
 }
 
-function closeSettings(e) {
-  if(e.target === document.getElementById('settings-modal'))
-    document.getElementById('settings-modal').classList.remove('open');
-}
-
-function saveSettings() {
-  cfg.noteWebhook = document.getElementById('cfg-note').value.trim();
-  cfg.offerWebhook = document.getElementById('cfg-offer').value.trim();
-  cfg.reminderWebhook = document.getElementById('cfg-reminder').value.trim();
-  cfg.email = document.getElementById('cfg-email').value.trim();
-  try { localStorage.setItem('sd_cfg', JSON.stringify(cfg)); } catch(e) {}
-  document.getElementById('settings-modal').classList.remove('open');
-  showToast('✅ Ustawienia zapisane', 'success');
-}
-
-// ==================== TOAST ====================
-let toastTimer;
-function showToast(msg, type) {
-  clearTimeout(toastTimer);
+// TOAST
+let toastT;
+function toast(msg, type) {
+  clearTimeout(toastT);
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type||'');
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent = msg; t.className = 'toast show '+(type||'');
+  toastT = setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ==================== INIT ====================
 renderList();
 </script>
 </body>
