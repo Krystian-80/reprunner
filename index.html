@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sales Driver</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #ff4d00;
+    --accent2: #ff7a33;
+    --green: #00e676;
+    --blue: #2979ff;
+    --yellow: #ffd600;
+    --text: #f0f0f5;
+    --muted: #6b6b85;
+    --radius: 16px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Sans',system-ui,sans-serif; }
+
+  /* SCREENS */
+  .screen { position:fixed; inset:0; display:flex; flex-direction:column; transition:transform .3s cubic-bezier(.4,0,.2,1), opacity .3s; }
+  .screen.hidden { transform:translateX(100%); opacity:0; pointer-events:none; }
+  .screen.slide-left { transform:translateX(-100%); opacity:0; pointer-events:none; }
+
+  /* HEADER */
+  .header { padding:52px 20px 16px; display:flex; align-items:center; gap:12px; background:var(--bg); flex-shrink:0; }
+  .header-back { width:40px; height:40px; border-radius:12px; background:var(--surface); border:none; color:var(--text); font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+  .header-title { font-size:18px; font-weight:700; letter-spacing:-.3px; }
+  .header-sub { font-size:13px; color:var(--muted); margin-top:2px; }
+
+  /* LIST SCREEN */
+  #screen-list { background:var(--bg); }
+  .list-top { padding:52px 20px 12px; flex-shrink:0; }
+  .list-top h1 { font-size:28px; font-weight:800; letter-spacing:-.5px; }
+  .list-top .sub { font-size:14px; color:var(--muted); margin-top:4px; }
+  .progress-bar { margin:16px 20px 0; height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; flex-shrink:0; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:2px; transition:width .4s; }
+  .progress-label { padding:6px 20px 0; font-size:12px; color:var(--muted); flex-shrink:0; }
+
+  .filter-row { display:flex; gap:8px; padding:12px 20px; overflow-x:auto; flex-shrink:0; scrollbar-width:none; }
+  .filter-row::-webkit-scrollbar { display:none; }
+  .filter-chip { flex-shrink:0; padding:7px 14px; border-radius:20px; background:var(--surface); border:1px solid var(--border); font-size:13px; color:var(--muted); cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .lead-list { flex:1; overflow-y:auto; padding:4px 20px 100px; scrollbar-width:none; }
+  .lead-list::-webkit-scrollbar { display:none; }
+
+  .lead-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:10px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:14px; }
+  .lead-card:active { transform:scale(.98); background:var(--surface2); }
+  .lead-avatar { width:46px; height:46px; border-radius:14px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; flex-shrink:0; color:var(--accent); border:1px solid var(--border); }
+  .lead-info { flex:1; min-width:0; }
+  .lead-name { font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lead-meta { font-size:13px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lead-badge { flex-shrink:0; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:.3px; }
+  .badge-open { background:rgba(41,121,255,.15); color:var(--blue); }
+  .badge-done { background:rgba(0,230,118,.12); color:var(--green); }
+  .badge-offer { background:rgba(255,214,0,.12); color:var(--yellow); }
+  .badge-default { background:var(--surface2); color:var(--muted); }
+
+  .fab { position:fixed; bottom:24px; right:20px; width:56px; height:56px; border-radius:18px; background:var(--accent); border:none; color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 20px rgba(255,77,0,.4); z-index:10; }
+
+  /* DETAIL SCREEN */
+  #screen-detail { background:var(--bg); }
+  .detail-hero { padding:0 20px 20px; flex-shrink:0; }
+  .detail-avatar-big { width:64px; height:64px; border-radius:20px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; color:var(--accent); border:1px solid var(--border); margin-bottom:14px; }
+  .detail-name { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+  .detail-firma { font-size:14px; color:var(--muted); margin-top:4px; }
+  .detail-tags { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .tag { padding:5px 10px; border-radius:8px; background:var(--surface); border:1px solid var(--border); font-size:12px; color:var(--muted); }
+
+  .info-grid { margin:0 20px; display:grid; gap:1px; border-radius:var(--radius); overflow:hidden; flex-shrink:0; }
+  .info-row { background:var(--surface); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; }
+  .info-label { font-size:13px; color:var(--muted); }
+  .info-val { font-size:14px; font-weight:600; text-align:right; max-width:60%; word-break:break-all; }
+
+  .notatka-box { margin:14px 20px 0; background:var(--surface); border-radius:var(--radius); padding:14px 16px; flex-shrink:0; }
+  .notatka-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:8px; }
+  .notatka-text { font-size:14px; line-height:1.6; color:var(--text); min-height:40px; }
+  .notatka-empty { color:var(--muted); font-style:italic; }
+
+  .actions { flex-shrink:0; padding:16px 20px 8px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn { border:none; border-radius:14px; padding:16px 12px; font-size:15px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition:all .12s; }
+  .btn:active { transform:scale(.96); }
+  .btn-icon { font-size:22px; }
+  .btn-call { background:var(--green); color:#001a0d; grid-column:1/-1; flex-direction:row; justify-content:center; gap:12px; font-size:17px; padding:18px; }
+  .btn-note { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  .btn-offer { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  .btn-reminder { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  .btn-next { background:var(--accent); color:#fff; }
+  .btn.recording { background:rgba(255,77,0,.2) !important; border-color:var(--accent) !important; color:var(--accent) !important; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+  /* NOTE SCREEN */
+  #screen-note { background:var(--bg); }
+  .note-body { flex:1; display:flex; flex-direction:column; padding:0 20px 20px; }
+  .note-textarea { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; font-size:16px; color:var(--text); resize:none; outline:none; font-family:inherit; line-height:1.6; margin-bottom:14px; }
+  .note-textarea:focus { border-color:var(--accent); }
+  .voice-btn { width:100%; padding:20px; border-radius:var(--radius); background:var(--surface2); border:2px solid var(--border); color:var(--text); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all .15s; margin-bottom:10px; }
+  .voice-btn.active { background:rgba(255,77,0,.15); border-color:var(--accent); color:var(--accent); }
+  .save-btn { width:100%; padding:18px; border-radius:var(--radius); background:var(--accent); border:none; color:#fff; font-size:17px; font-weight:800; cursor:pointer; }
+
+  /* OFFER SCREEN */
+  #screen-offer { background:var(--bg); }
+  .offer-body { flex:1; overflow-y:auto; padding:0 20px 20px; scrollbar-width:none; }
+  .offer-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:12px; cursor:pointer; transition:all .15s; }
+  .offer-card:active { transform:scale(.98); }
+  .offer-card.selected { border-color:var(--accent); background:rgba(255,77,0,.08); }
+  .offer-title { font-size:16px; font-weight:700; }
+  .offer-desc { font-size:13px; color:var(--muted); margin-top:6px; line-height:1.5; }
+  .offer-price { font-size:20px; font-weight:800; color:var(--accent); margin-top:8px; }
+  .send-btn { margin:0 20px; width:calc(100% - 40px); padding:18px; border-radius:var(--radius); background:var(--accent); border:none; color:#fff; font-size:17px; font-weight:800; cursor:pointer; flex-shrink:0; margin-bottom:16px; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:14px; font-weight:600; opacity:0; transition:all .3s; z-index:100; white-space:nowrap; pointer-events:none; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--accent); color:var(--accent); }
+
+  /* N8N CONFIG */
+  .config-row { padding:8px 20px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .config-dot { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+  .config-dot.connected { background:var(--green); }
+  .config-label { font-size:12px; color:var(--muted); }
+  .config-btn { margin-left:auto; padding:4px 10px; border-radius:8px; background:var(--surface); border:1px solid var(--border); color:var(--muted); font-size:11px; cursor:pointer; }
+
+  /* SETTINGS MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .25s; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-sheet { background:var(--surface); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; transform:translateY(100%); transition:transform .3s cubic-bezier(.4,0,.2,1); }
+  .modal-overlay.open .modal-sheet { transform:translateY(0); }
+  .modal-title { font-size:18px; font-weight:800; margin-bottom:20px; }
+  .modal-input-label { font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.6px; }
+  .modal-input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; font-size:14px; color:var(--text); outline:none; margin-bottom:14px; font-family:inherit; }
+  .modal-input:focus { border-color:var(--accent); }
+  .modal-save { width:100%; padding:16px; border-radius:14px; background:var(--accent); border:none; color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<!-- ===== LIST SCREEN ===== -->
+<div id="screen-list" class="screen">
+  <div class="list-top">
+    <h1>Sales Driver 🚗</h1>
+    <div class="sub" id="list-sub">Ładowanie leadów...</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label"></div>
+
+  <div class="filter-row">
+    <div class="filter-chip active" onclick="setFilter('all',this)">Wszystkie</div>
+    <div class="filter-chip" onclick="setFilter('open',this)">Open</div>
+    <div class="filter-chip" onclick="setFilter('notatka',this)">Bez notatki</div>
+    <div class="filter-chip" onclick="setFilter('oferta',this)">Oferta</div>
+  </div>
+
+  <div class="lead-list" id="lead-list"></div>
+
+  <button class="fab" onclick="openSettings()">⚙️</button>
+</div>
+
+<!-- ===== DETAIL SCREEN ===== -->
+<div id="screen-detail" class="screen hidden">
+  <div class="header">
+    <button class="header-back" onclick="goBack()">←</button>
+    <div>
+      <div class="header-title" id="d-counter"></div>
+      <div class="header-sub" id="d-progress-text"></div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;">
+    <div class="detail-hero">
+      <div class="detail-avatar-big" id="d-avatar"></div>
+      <div class="detail-name" id="d-name"></div>
+      <div class="detail-firma" id="d-firma"></div>
+      <div class="detail-tags" id="d-tags"></div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-row"><span class="info-label">📍 Miasto</span><span class="info-val" id="d-miasto">—</span></div>
+      <div class="info-row"><span class="info-label">📧 Email</span><span class="info-val" id="d-email" style="color:var(--blue);font-size:12px;">—</span></div>
+      <div class="info-row"><span class="info-label">📦 Kiedy zakup</span><span class="info-val" id="d-kiedy">—</span></div>
+      <div class="info-row"><span class="info-label">📋 Oferta</span><span class="info-val" id="d-oferta">—</span></div>
+    </div>
+
+    <div class="notatka-box">
+      <div class="notatka-label">Notatka</div>
+      <div class="notatka-text" id="d-notatka"><span class="notatka-empty">Brak notatki</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-call" id="btn-call" onclick="callLead()">
+        <span class="btn-icon">📞</span><span id="call-label">Zadzwoń</span>
+      </button>
+      <button class="btn btn-note" onclick="openNote()">
+        <span class="btn-icon">🎙️</span><span>Notatka</span>
+      </button>
+      <button class="btn btn-offer" onclick="openOffer()">
+        <span class="btn-icon">📩</span><span>Wyślij ofertę</span>
+      </button>
+      <button class="btn btn-reminder" onclick="setReminder()">
+        <span class="btn-icon">⏰</span><span>Przypomnienie</span>
+      </button>
+      <button class="btn btn-next" onclick="nextLead()" style="grid-column:1/-1;flex-direction:row;gap:10px;justify-content:center;font-size:16px;">
+        <span>Następny lead</span><span>→</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTE SCREEN ===== -->
+<div id="screen-note" class="screen hidden">
+  <div class="header">
+    <button class="header-back" onclick="closeNote()">←</button>
+    <div>
+      <div class="header-title">Notatka głosowa</div>
+      <div class="header-sub" id="note-for"></div>
+    </div>
+  </div>
+  <div class="note-body">
+    <textarea class="note-textarea" id="note-text" placeholder="Wpisz lub podyktuj notatkę..."></textarea>
+    <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">
+      <span id="voice-icon">🎙️</span><span id="voice-label">Naciśnij i mów</span>
+    </button>
+    <button class="save-btn" onclick="saveNote()">💾 Zapisz notatkę</button>
+  </div>
+</div>
+
+<!-- ===== OFFER SCREEN ===== -->
+<div id="screen-offer" class="screen hidden">
+  <div class="header">
+    <button class="header-back" onclick="closeOffer()">←</button>
+    <div>
+      <div class="header-title">Wybierz ofertę</div>
+      <div class="header-sub" id="offer-for"></div>
+    </div>
+  </div>
+  <div class="offer-body" id="offer-list"></div>
+  <button class="send-btn" onclick="sendOffer()" id="send-offer-btn" disabled style="opacity:.4">📩 Wyślij ofertę</button>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">⚙️ Ustawienia n8n</div>
+    <div class="modal-input-label">Webhook — notatka</div>
+    <input class="modal-input" id="cfg-note" type="url" placeholder="https://n8n.twoja-domena.com/webhook/note">
+    <div class="modal-input-label">Webhook — oferta</div>
+    <input class="modal-input" id="cfg-offer" type="url" placeholder="https://n8n.twoja-domena.com/webhook/offer">
+    <div class="modal-input-label">Webhook — przypomnienie</div>
+    <input class="modal-input" id="cfg-reminder" type="url" placeholder="https://n8n.twoja-domena.com/webhook/reminder">
+    <div class="modal-input-label">Twój email (nadawca ofert)</div>
+    <input class="modal-input" id="cfg-email" type="email" placeholder="krystian@vertextrading.eu">
+    <button class="modal-save" onclick="saveSettings()">Zapisz</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+const SAMPLE_LEADS = [
+  {idx:1,imie:"Adam",phone:"+48 502 087 148",email:"atko2@wp.pl",miasto:"Rybnik",kiedy:"Do 6 miesięcy",firma:"Blacharstwo",notatka:"Cienkie elementy do wentylacji",oferta_status:"oferta wysłana 09/04",status:"Open"},
+  {idx:2,imie:"Marcin",phone:"+48 604 097 228",email:"Marcinzareba@piczta.fm",miasto:"Bytom",kiedy:"Do 3 miesięcy",firma:"Ślusarstwo Zrębski",notatka:"Interesuje go 2kW",oferta_status:"oferta wysłana 03/04",status:"Open"},
+  {idx:3,imie:"Tomasz",phone:"+48 881 672 929",email:"tomasz.krajczyk@kania.net.pl",miasto:"Kraków",kiedy:"Do 3 miesięcy",firma:"Kania Metal",notatka:"4w1, spawanie alum.",oferta_status:"oferta wysłana 07/04",status:"Open"},
+  {idx:4,imie:"Andrzej",phone:"+48 574 630 515",email:"dsapinska@op.pl",miasto:"Żywiec",kiedy:"Do 6 miesięcy",firma:"",notatka:"",oferta_status:"oferta wysłana 09/04",status:"Open"},
+  {idx:7,imie:"Jerzy",phone:"+48 662 282 942",email:"j.marciniak8@interia.pl",miasto:"Warszawa",kiedy:"Do 3 miesięcy",firma:"Budownictwo Marciniak",notatka:"",oferta_status:"oferta wysłana 07/04",status:"Open"},
+  {idx:9,imie:"Krystian",phone:"+48 605 947 796",email:"krystiandesign85@gmail.com",miasto:"Katowice",kiedy:"Do 3 miesięcy",firma:"KD Metal",notatka:"",oferta_status:"oferta wysłana 07/04",status:"Open"},
+  {idx:10,imie:"Grzegorz",phone:"+48 601 837 854",email:"gregor001@tlen.pl",miasto:"Zielona Góra",kiedy:"Do 3 miesięcy",firma:"",notatka:"",oferta_status:"",status:"Open"},
+  {idx:11,imie:"Witold",phone:"+48 604 765 512",email:"wgawior58@wp.pl",miasto:"Kielce",kiedy:"Do 3 miesięcy",firma:"",notatka:"",oferta_status:"",status:"Open"},
+  {idx:16,imie:"Marek",phone:"+48 792 909 090",email:"biuro@enterled.pl",miasto:"Bielsko-Biała",kiedy:"Do 3 miesięcy",firma:"Enterled",notatka:"",oferta_status:"oferta wysłana 09/04",status:"Open"},
+  {idx:17,imie:"Tomasz",phone:"+48 727 789 183",email:"sikorskitomasz1953@gmail.com",miasto:"Poznań",kiedy:"Do 6 miesięcy",firma:"",notatka:"",oferta_status:"dzwoń popołudniu",status:"Open"},
+  {idx:18,imie:"Marian",phone:"+48 513 014 636",email:"mariusz.michalski9@icloud.com",miasto:"Szczecin",kiedy:"",firma:"",notatka:"Ofertę A&B CP + 4w1",oferta_status:"oferta wysłana 07/04",status:"Open"},
+  {idx:19,imie:"Robert",phone:"+48 785 234 662",email:"przybysz547@gmail.com",miasto:"Bydgoszcz",kiedy:"Pilne",firma:"Roben Dach",notatka:"Nie odbiera — próbować rano",oferta_status:"oferta wysłana 09/04",status:"Follow-up"},
+];
+
+const OFFERS = [
+  {id:"laser-2kw", title:"Laser Ciągły UC-CW2 2000W", desc:"Chłodzenie wodne · do metalu ciężkiego · spawalnictwo i czyszczenie", price:"31 000 PLN netto", tag:"Bestseller"},
+  {id:"laser-pulse-a3", title:"Laser Pulsacyjny CP-A3 300W", desc:"Chłodzenie powietrzem · mobilny · do warsztatów i lżejszych zastosowań", price:"29 000 PLN netto", tag:"Mobilny"},
+  {id:"laser-pulse-b3", title:"Laser Pulsacyjny CP-B3 300W", desc:"Briefcase · ultra mobilny · idealne do wyjazdów serwisowych", price:"28 000 PLN netto", tag:"Walizka"},
+  {id:"spawarka-4w1", title:"Spawarka 4w1 AI", desc:"Laser + MIG + TIG + elektroda · inteligentna regulacja · pełny zestaw", price:"na zapytanie", tag:"Combo"},
+];
+
+// ==================== STATE ====================
+let leads = [...SAMPLE_LEADS];
+let currentIdx = 0;
+let currentFilter = 'all';
+let selectedOffer = null;
+let recognition = null;
+let isRecording = false;
+let cfg = {noteWebhook:'', offerWebhook:'', reminderWebhook:'', email:''};
+
+// Load config from localStorage
+try {
+  const saved = localStorage.getItem('sd_cfg');
+  if(saved) cfg = {...cfg, ...JSON.parse(saved)};
+} catch(e){}
+
+// ==================== FILTERING ====================
+function filteredLeads() {
+  if(currentFilter === 'open') return leads.filter(l => l.status === 'Open');
+  if(currentFilter === 'notatka') return leads.filter(l => !l.notatka);
+  if(currentFilter === 'oferta') return leads.filter(l => l.oferta_status && l.oferta_status.includes('wysłana'));
+  return leads;
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+// ==================== RENDER LIST ====================
+function renderList() {
+  const fl = filteredLeads();
+  const done = leads.filter(l => l.notatka).length;
+  document.getElementById('list-sub').textContent = `${fl.length} leadów · ${done} z notatką`;
+  document.getElementById('progress-fill').style.width = `${Math.round(done/leads.length*100)}%`;
+  document.getElementById('progress-label').textContent = `${done} / ${leads.length} obrobionych`;
+
+  const ul = document.getElementById('lead-list');
+  ul.innerHTML = fl.map((l,i) => {
+    const init = l.imie[0].toUpperCase();
+    const badge = l.notatka ? 'badge-done' : (l.oferta_status ? 'badge-offer' : 'badge-open');
+    const badgeText = l.notatka ? 'Notatka ✓' : (l.oferta_status ? 'Oferta' : 'Open');
+    const meta = [l.firma, l.miasto].filter(Boolean).join(' · ') || l.kiedy || '—';
+    return `<div class="lead-card" onclick="openLead(${leads.indexOf(l)})">
+      <div class="lead-avatar">${init}</div>
+      <div class="lead-info">
+        <div class="lead-name">${l.imie}${l.firma ? ' — '+l.firma : ''}</div>
+        <div class="lead-meta">${meta}</div>
+      </div>
+      <div class="lead-badge ${badge}">${badgeText}</div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== LEAD DETAIL ====================
+function openLead(i) {
+  currentIdx = i;
+  showDetail();
+}
+
+function showDetail() {
+  const l = leads[currentIdx];
+  const fl = filteredLeads();
+  const posInFilter = fl.indexOf(l);
+
+  document.getElementById('d-counter').textContent = `${l.imie} · #${l.idx}`;
+  document.getElementById('d-progress-text').textContent = `Lead ${posInFilter+1} z ${fl.length}`;
+  document.getElementById('d-avatar').textContent = l.imie[0].toUpperCase();
+  document.getElementById('d-name').textContent = l.imie;
+  document.getElementById('d-firma').textContent = l.firma || '—';
+  document.getElementById('d-miasto').textContent = l.miasto || '—';
+  document.getElementById('d-email').textContent = l.email || '—';
+  document.getElementById('d-kiedy').textContent = l.kiedy || '—';
+  document.getElementById('d-oferta').textContent = l.oferta_status || 'Brak';
+  document.getElementById('d-notatka').innerHTML = l.notatka
+    ? `<span>${l.notatka}</span>`
+    : `<span class="notatka-empty">Brak notatki — nagraj po rozmowie</span>`;
+  document.getElementById('call-label').textContent = l.phone;
+
+  const tags = document.getElementById('d-tags');
+  tags.innerHTML = [l.status, l.kiedy].filter(Boolean).map(t => `<span class="tag">${t}</span>`).join('');
+
+  showScreen('screen-detail', 'screen-list');
+}
+
+function callLead() {
+  const l = leads[currentIdx];
+  const phone = l.phone.replace(/\s/g,'');
+  window.location.href = `tel:${phone}`;
+}
+
+function nextLead() {
+  const fl = filteredLeads();
+  const cur = fl.indexOf(leads[currentIdx]);
+  if(cur < fl.length - 1) {
+    currentIdx = leads.indexOf(fl[cur+1]);
+    showDetail();
+  } else {
+    showToast('✅ Koniec listy!', 'success');
+  }
+}
+
+function goBack() {
+  showScreen('screen-list', 'screen-detail', true);
+  renderList();
+}
+
+// ==================== NOTE ====================
+function openNote() {
+  const l = leads[currentIdx];
+  document.getElementById('note-for').textContent = l.imie + (l.firma ? ' · '+l.firma : '');
+  document.getElementById('note-text').value = l.notatka || '';
+  showScreen('screen-note', 'screen-detail');
+}
+
+function closeNote() {
+  showScreen('screen-detail', 'screen-note', true);
+}
+
+function toggleVoice() {
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('Przeglądarka nie wspiera mowy. Wpisz ręcznie.', 'error');
+    return;
+  }
+  if(isRecording) { stopVoice(); return; }
+  startVoice();
+}
+
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'pl-PL';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  const existing = document.getElementById('note-text').value;
+  let finalTranscript = existing;
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++) {
+      if(e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + e.results[i][0].transcript;
+      else interim = e.results[i][0].transcript;
+    }
+    document.getElementById('note-text').value = finalTranscript + (interim ? ' ' + interim : '');
+  };
+  recognition.onend = () => { isRecording = false; updateVoiceUI(); };
+  recognition.start();
+  isRecording = true;
+  updateVoiceUI();
+}
+
+function stopVoice() {
+  if(recognition) recognition.stop();
+  isRecording = false;
+  updateVoiceUI();
+}
+
+function updateVoiceUI() {
+  const btn = document.getElementById('voice-btn');
+  document.getElementById('voice-icon').textContent = isRecording ? '⏹️' : '🎙️';
+  document.getElementById('voice-label').textContent = isRecording ? 'Nagrywam... naciśnij by zatrzymać' : 'Naciśnij i mów';
+  btn.classList.toggle('active', isRecording);
+}
+
+async function saveNote() {
+  const text = document.getElementById('note-text').value.trim();
+  if(!text) { showToast('Notatka jest pusta', 'error'); return; }
+  const l = leads[currentIdx];
+  l.notatka = text;
+
+  if(cfg.noteWebhook) {
+    try {
+      await fetch(cfg.noteWebhook, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({idx: l.idx, imie: l.imie, firma: l.firma, phone: l.phone, email: l.email, notatka: text, timestamp: new Date().toISOString()})
+      });
+      showToast('✅ Notatka zapisana w Google Sheet', 'success');
+    } catch(e) {
+      showToast('⚠️ Zapisano lokalnie (brak połączenia z n8n)', '');
+    }
+  } else {
+    showToast('📝 Zapisano lokalnie', 'success');
+  }
+  closeNote();
+  showDetail();
+}
+
+// ==================== OFFER ====================
+function openOffer() {
+  const l = leads[currentIdx];
+  document.getElementById('offer-for').textContent = `Wyślij do: ${l.imie} · ${l.email}`;
+  selectedOffer = null;
+  document.getElementById('send-offer-btn').disabled = true;
+  document.getElementById('send-offer-btn').style.opacity = '.4';
+
+  document.getElementById('offer-list').innerHTML = OFFERS.map(o =>
+    `<div class="offer-card" id="oc-${o.id}" onclick="selectOffer('${o.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="offer-title">${o.title}</div>
+        <span class="lead-badge badge-open" style="font-size:10px;margin-left:8px;flex-shrink:0">${o.tag}</span>
+      </div>
+      <div class="offer-desc">${o.desc}</div>
+      <div class="offer-price">${o.price}</div>
+    </div>`
+  ).join('');
+
+  showScreen('screen-offer', 'screen-detail');
+}
+
+function selectOffer(id) {
+  selectedOffer = OFFERS.find(o => o.id === id);
+  document.querySelectorAll('.offer-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('oc-'+id).classList.add('selected');
+  document.getElementById('send-offer-btn').disabled = false;
+  document.getElementById('send-offer-btn').style.opacity = '1';
+}
+
+function closeOffer() {
+  showScreen('screen-detail', 'screen-offer', true);
+}
+
+async function sendOffer() {
+  if(!selectedOffer) return;
+  const l = leads[currentIdx];
+
+  if(cfg.offerWebhook) {
+    try {
+      await fetch(cfg.offerWebhook, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({idx: l.idx, imie: l.imie, firma: l.firma, email: l.email, offer_id: selectedOffer.id, offer_title: selectedOffer.title, sender_email: cfg.email, timestamp: new Date().toISOString()})
+      });
+      l.oferta_status = 'oferta wysłana ' + new Date().toLocaleDateString('pl');
+      showToast('📩 Oferta wysłana!', 'success');
+    } catch(e) {
+      showToast('⚠️ Brak połączenia z n8n', 'error');
+    }
+  } else {
+    showToast('⚙️ Skonfiguruj webhook oferty w ustawieniach', 'error');
+  }
+  closeOffer();
+  showDetail();
+}
+
+// ==================== REMINDER ====================
+function setReminder() {
+  const l = leads[currentIdx];
+  const time = prompt(`Kiedy zadzwonić do ${l.imie}?\n(np. jutro 12:15 / 2026-05-10 09:00)`);
+  if(!time) return;
+
+  if(cfg.reminderWebhook) {
+    fetch(cfg.reminderWebhook, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({idx: l.idx, imie: l.imie, phone: l.phone, email: l.email, reminder_text: time, timestamp: new Date().toISOString()})
+    }).then(() => showToast('⏰ Przypomnienie ustawione', 'success'))
+      .catch(() => showToast('⚠️ Brak połączenia z n8n', 'error'));
+  } else {
+    showToast('⏰ Zapisano: ' + time, 'success');
+  }
+}
+
+// ==================== SCREENS ====================
+function showScreen(showId, hideId, reverse) {
+  const show = document.getElementById(showId);
+  const hide = document.getElementById(hideId);
+  if(reverse) {
+    hide.classList.add('hidden');
+    show.classList.remove('hidden');
+    show.classList.remove('slide-left');
+  } else {
+    hide.classList.add('slide-left');
+    show.classList.remove('hidden');
+  }
+}
+
+// ==================== SETTINGS ====================
+function openSettings() {
+  document.getElementById('cfg-note').value = cfg.noteWebhook;
+  document.getElementById('cfg-offer').value = cfg.offerWebhook;
+  document.getElementById('cfg-reminder').value = cfg.reminderWebhook;
+  document.getElementById('cfg-email').value = cfg.email;
+  document.getElementById('settings-modal').classList.add('open');
+}
+
+function closeSettings(e) {
+  if(e.target === document.getElementById('settings-modal'))
+    document.getElementById('settings-modal').classList.remove('open');
+}
+
+function saveSettings() {
+  cfg.noteWebhook = document.getElementById('cfg-note').value.trim();
+  cfg.offerWebhook = document.getElementById('cfg-offer').value.trim();
+  cfg.reminderWebhook = document.getElementById('cfg-reminder').value.trim();
+  cfg.email = document.getElementById('cfg-email').value.trim();
+  try { localStorage.setItem('sd_cfg', JSON.stringify(cfg)); } catch(e) {}
+  document.getElementById('settings-modal').classList.remove('open');
+  showToast('✅ Ustawienia zapisane', 'success');
+}
+
+// ==================== TOAST ====================
+let toastTimer;
+function showToast(msg, type) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type||'');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ==================== INIT ====================
+renderList();
+</script>
+</body>
+</html>
