@@ -6,181 +6,194 @@
 <title>RepRunner</title>
 <style>
 :root {
-  --bg: #0c0d08;
-  --surface: #141510;
-  --surface2: #1c1e15;
-  --surface3: #23261a;
-  --border: #2e3122;
-  --border2: #3d4230;
-  --accent: #8a9a4a;
-  --accent2: #b8cc5a;
-  --accent3: #d4e870;
-  --dim: #5a6335;
-  --red: #c0392b;
-  --green: #4a7c3f;
-  --green2: #6ab04c;
-  --amber: #b8860b;
-  --amber2: #d4a017;
-  --text: #d8dcc0;
-  --text2: #9aa080;
-  --text3: #5a6040;
-  --radius: 4px;
-  --radius2: 8px;
+  --bg: #0a0a0a;
+  --s1: #141414;
+  --s2: #1e1e1e;
+  --s3: #282828;
+  --border: #2a2a2a;
+  --border2: #383838;
+  --accent: #ffffff;
+  --accent2: #e0e0e0;
+  --blue: #4a9eff;
+  --green: #2ecc71;
+  --green2: #27ae60;
+  --red: #e74c3c;
+  --amber: #f39c12;
+  --text: #f0f0f0;
+  --text2: #a0a0a0;
+  --text3: #606060;
+  --r: 8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Courier New',monospace;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;}
 
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .25s;}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:transform .22s cubic-bezier(.4,0,.2,1),opacity .22s;}
 .screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
 .screen.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none;}
 
-/* scanline overlay */
-.screen::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:999;}
+/* HEADER */
+.hdr{padding:52px 20px 14px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.back-btn{width:40px;height:40px;border-radius:var(--r);background:var(--s2);border:1px solid var(--border2);color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.hdr-info{flex:1;}
+.hdr-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.2px;}
+.hdr-sub{font-size:13px;color:var(--text3);margin-top:2px;}
 
-.hdr{padding:48px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border);}
-.hdr-back{width:36px;height:36px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border2);color:var(--accent2);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;}
-.hdr-title{font-size:15px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;}
-.hdr-sub{font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:2px;}
-
-/* LIST */
+/* LIST SCREEN */
 #screen-list{background:var(--bg);}
-.list-top{padding:48px 16px 10px;flex-shrink:0;}
-.brand{font-size:11px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
-.list-top h1{font-size:32px;font-weight:700;color:var(--accent2);letter-spacing:4px;text-transform:uppercase;line-height:1;}
-.blade-sub{font-size:10px;color:var(--text3);letter-spacing:2px;margin-top:4px;}
+.list-head{padding:52px 20px 0;flex-shrink:0;}
+.app-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.app-title{font-size:34px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1;}
+.app-sub{font-size:14px;color:var(--text3);margin-top:6px;}
 
-.prog-wrap{padding:10px 16px 0;flex-shrink:0;}
-.prog-bar{height:2px;background:var(--surface3);position:relative;}
-.prog-fill{height:100%;background:var(--accent);transition:width .4s;}
-.prog-label{font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:4px;}
+.prog-section{padding:14px 20px 0;flex-shrink:0;}
+.prog-track{height:2px;background:var(--s3);}
+.prog-bar{height:100%;background:var(--blue);transition:width .4s;}
+.prog-text{font-size:12px;color:var(--text3);margin-top:5px;}
 
-.filters{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
-.filters::-webkit-scrollbar{display:none;}
-.chip{flex-shrink:0;padding:5px 12px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:11px;color:var(--text3);cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
-.chip.on{background:var(--surface3);border-color:var(--accent);color:var(--accent2);}
+.filter-row{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:7px 14px;border-radius:20px;background:var(--s1);border:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .12s;}
+.chip.on{background:var(--accent);color:#000;border-color:var(--accent);}
 
-.lead-list{flex:1;overflow-y:auto;padding:4px 16px 90px;scrollbar-width:none;}
+.lead-list{flex:1;overflow-y:auto;padding:4px 20px 100px;scrollbar-width:none;}
 .lead-list::-webkit-scrollbar{display:none;}
 
-.lcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .1s;}
-.lcard:active{background:var(--surface2);border-left-color:var(--accent);}
-.lcard.has-note{border-left-color:var(--accent);}
-.ava{width:40px;height:40px;border-radius:var(--radius);background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;color:var(--accent2);border:1px solid var(--border2);letter-spacing:0;}
+.lcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background .1s;}
+.lcard:active{background:var(--s2);}
+.lcard.has-note{border-left:3px solid var(--green);}
+.lcard.has-warn{border-left:3px solid var(--red);}
+
+.ava{width:48px;height:48px;border-radius:var(--r);background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;color:var(--text);border:1px solid var(--border2);}
 .linfo{flex:1;min-width:0;}
-.lname{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.5px;}
-.lmeta{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px;}
-.badge{flex-shrink:0;padding:3px 8px;border-radius:var(--radius);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
-.b-note{background:rgba(74,124,63,.2);color:var(--green2);border:1px solid var(--green);}
-.b-open{background:rgba(138,154,74,.1);color:var(--dim);border:1px solid var(--border2);}
-.b-offer{background:rgba(184,134,11,.15);color:var(--amber2);border:1px solid var(--amber);}
-.b-warn{background:rgba(192,57,43,.15);color:#e74c3c;border:1px solid var(--red);}
+.lname{font-size:16px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lmeta{font-size:13px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-.fab{position:fixed;bottom:20px;right:16px;width:48px;height:48px;border-radius:var(--radius);background:var(--surface3);border:1px solid var(--accent);color:var(--accent2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
+.badge{flex-shrink:0;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.3px;}
+.b-note{background:rgba(46,204,113,.15);color:var(--green);}
+.b-open{background:var(--s3);color:var(--text3);}
+.b-warn{background:rgba(231,76,60,.15);color:var(--red);}
+.b-offer{background:rgba(74,158,255,.15);color:var(--blue);}
 
-/* DETAIL */
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--s2);border:1px solid var(--border2);color:var(--text2);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
+
+/* DETAIL SCREEN */
 #screen-detail{background:var(--bg);}
 .det-scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
 .det-scroll::-webkit-scrollbar{display:none;}
-.det-hero{padding:16px 16px 12px;border-bottom:1px solid var(--border);}
-.det-ava{width:52px;height:52px;border-radius:var(--radius);background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent2);border:1px solid var(--border2);margin-bottom:10px;}
-.det-name{font-size:22px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;}
-.det-firma{font-size:12px;color:var(--text3);margin-top:3px;letter-spacing:1px;}
-.det-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.tag{padding:3px 8px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
 
-.info-block{margin:12px 16px;border:1px solid var(--border);border-radius:var(--radius);}
-.irow{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.det-hero{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
+.det-ava{width:60px;height:60px;border-radius:12px;background:var(--s2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;}
+.det-name{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.4px;}
+.det-firma{font-size:14px;color:var(--text3);margin-top:4px;}
+.det-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.tag{padding:4px 10px;border-radius:6px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--text3);}
+
+.info-grid{margin:16px 20px 0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.irow{background:var(--s1);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
 .irow:last-child{border-bottom:none;}
-.ilabel{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
-.ival{font-size:12px;font-weight:700;color:var(--text);text-align:right;max-width:58%;word-break:break-all;}
-.ival.em{color:var(--accent);font-size:11px;}
+.ilbl{font-size:13px;color:var(--text3);}
+.ival{font-size:14px;font-weight:600;text-align:right;max-width:60%;word-break:break-all;}
+.ival.link{color:var(--blue);font-size:12px;}
 
-.note-block{margin:0 16px 12px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;}
-.note-lbl{font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-.note-val{font-size:13px;line-height:1.6;color:var(--text);}
-.note-empty{color:var(--text3);font-style:italic;font-size:12px;}
+.note-section{margin:14px 20px 0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
+.note-lbl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.note-text{font-size:15px;line-height:1.6;color:var(--text);}
+.note-empty{font-size:14px;color:var(--text3);font-style:italic;}
 
-.actions{padding:12px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;}
-.btn{border:none;border-radius:var(--radius);padding:14px 10px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .1s;font-family:inherit;letter-spacing:1px;text-transform:uppercase;}
+.actions{padding:16px 20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0;}
+.btn{border:none;border-radius:var(--r);padding:18px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .1s;}
 .btn:active{transform:scale(.97);}
-.btn-icon{font-size:20px;}
-.btn-call{background:var(--green);color:#0a1a08;grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;font-size:14px;padding:16px;border:1px solid var(--green2);}
-.btn-call:active{background:#3a6a30;}
-.btn-sec{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
-.btn-sec:active{background:var(--surface3);}
-.btn-next{background:var(--surface3);color:var(--accent2);border:1px solid var(--accent);grid-column:1/-1;flex-direction:row;justify-content:center;gap:8px;font-size:13px;padding:14px;}
+.bicon{font-size:22px;}
+.btn-call{background:var(--green2);color:#fff;grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px;font-size:16px;padding:20px;border-radius:10px;}
+.btn-call:active{background:#219a52;}
+.btn-gray{background:var(--s2);color:var(--text);border:1px solid var(--border2);}
+.btn-gray:active{background:var(--s3);}
+.btn-next{background:var(--s2);color:var(--text);border:1px solid var(--border2);grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;font-size:15px;padding:18px;border-radius:10px;}
 
 /* NOTE SCREEN */
 #screen-note{background:var(--bg);}
-.note-body{flex:1;display:flex;flex-direction:column;padding:12px 16px 16px;gap:10px;}
-.note-ta{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;font-size:14px;color:var(--text);resize:none;outline:none;font-family:'Courier New',monospace;line-height:1.7;min-height:180px;}
-.note-ta:focus{border-color:var(--accent);}
-.voice-btn{padding:16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;}
-.voice-btn.on{background:rgba(138,154,74,.15);border-color:var(--accent);color:var(--accent2);animation:blink 1s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
-.save-btn{padding:16px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;}
+.note-body{flex:1;display:flex;flex-direction:column;padding:16px 20px 20px;gap:12px;}
+.note-ta{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:16px;font-size:16px;color:var(--text);resize:none;outline:none;font-family:inherit;line-height:1.7;min-height:160px;}
+.note-ta:focus{border-color:var(--blue);}
+.voice-btn{padding:18px;border-radius:var(--r);background:var(--s2);border:1px solid var(--border2);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .12s;}
+.voice-btn.on{background:rgba(231,76,60,.12);border-color:var(--red);color:var(--red);animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.save-btn{padding:18px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;}
 
 /* OFFER SCREEN */
 #screen-offer{background:var(--bg);}
-.offer-scroll{flex:1;overflow-y:auto;padding:8px 16px;scrollbar-width:none;}
+.offer-scroll{flex:1;overflow-y:auto;padding:8px 20px;scrollbar-width:none;}
 .offer-scroll::-webkit-scrollbar{display:none;}
-.ocard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .1s;}
+.ocard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .1s;}
 .ocard:active{transform:scale(.98);}
-.ocard.sel{border-color:var(--accent);border-left-color:var(--accent2);background:var(--surface2);}
-.otitle{font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;}
-.odesc{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5;letter-spacing:.3px;}
-.oprice{font-size:18px;font-weight:700;color:var(--accent3);margin-top:8px;letter-spacing:1px;}
-.otag{display:inline-block;padding:2px 7px;border-radius:var(--radius);background:var(--surface3);border:1px solid var(--border2);font-size:10px;color:var(--dim);margin-top:4px;letter-spacing:1px;text-transform:uppercase;font-family:inherit;}
-.send-btn{margin:0 16px 16px;padding:16px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;width:calc(100%-32px);font-family:inherit;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
+.ocard.sel{border-color:var(--blue);background:rgba(74,158,255,.06);}
+.otitle{font-size:15px;font-weight:700;color:var(--text);}
+.odesc{font-size:13px;color:var(--text3);margin-top:5px;line-height:1.5;}
+.oprice{font-size:22px;font-weight:700;color:var(--blue);margin-top:8px;}
+.otag-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.otag{padding:3px 8px;border-radius:6px;background:var(--s3);font-size:11px;color:var(--text3);font-weight:600;}
+.send-btn{margin:0 20px 20px;padding:18px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;width:calc(100% - 40px);flex-shrink:0;transition:opacity .12s;}
 .send-btn:disabled{opacity:.3;cursor:default;}
 
+/* CALENDAR SCREEN */
+#screen-cal{background:var(--bg);}
+.cal-body{flex:1;display:flex;flex-direction:column;padding:16px 20px 20px;gap:12px;}
+.cal-lbl{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+.cal-input{width:100%;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;font-size:15px;color:var(--text);outline:none;font-family:inherit;}
+.cal-input:focus{border-color:var(--blue);}
+.cal-presets{display:flex;gap:8px;flex-wrap:wrap;}
+.preset{padding:8px 14px;border-radius:20px;background:var(--s2);border:1px solid var(--border2);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .1s;}
+.preset:active{background:var(--s3);}
+.preset.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.cal-save{padding:18px;border-radius:var(--r);background:var(--green2);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;margin-top:auto;}
+
 /* SETTINGS */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s;}
 .modal-bg.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius2) var(--radius2) 0 0;padding:20px 16px 36px;width:100%;transform:translateY(100%);transition:transform .25s;}
+.modal{background:var(--s1);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:22px 20px 40px;width:100%;transform:translateY(100%);transition:transform .25s;}
 .modal-bg.open .modal{transform:translateY(0);}
-.modal-title{font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
-.mlbl{font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.minput{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 12px;font-size:13px;color:var(--text);outline:none;margin-bottom:10px;font-family:'Courier New',monospace;}
-.minput:focus{border-color:var(--accent);}
-.msave{width:100%;padding:14px;border-radius:var(--radius);background:var(--accent);border:1px solid var(--accent2);color:#0c0d08;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:18px;}
+.mlbl{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
+.minput{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);padding:13px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:12px;}
+.minput:focus{border-color:var(--blue);}
+.msave{width:100%;padding:16px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:15px;font-weight:600;cursor:pointer;border:none;}
 
 /* TOAST */
-.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0;transition:all .25s;z-index:100;white-space:nowrap;pointer-events:none;font-family:inherit;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;opacity:0;transition:all .22s;z-index:100;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:var(--accent);color:var(--accent2);}
-.toast.err{border-color:var(--red);color:#e74c3c;}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+.toast.info{border-color:var(--blue);color:var(--blue);}
 </style>
 </head>
 <body>
 
-<!-- LIST -->
+<!-- ===== LIST ===== -->
 <div id="screen-list" class="screen">
-  <div class="list-top">
-    <div class="brand">// field ops terminal</div>
-    <h1>RepRunner</h1>
-    <div class="blade-sub" id="list-sub">inicjalizacja...</div>
+  <div class="list-head">
+    <div class="app-label">Field Sales</div>
+    <div class="app-title">RepRunner</div>
+    <div class="app-sub" id="list-sub">Ładowanie...</div>
   </div>
-  <div class="prog-wrap">
-    <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
-    <div class="prog-label" id="prog-lbl"></div>
+  <div class="prog-section">
+    <div class="prog-track"><div class="prog-bar" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt"></div>
   </div>
-  <div class="filters">
+  <div class="filter-row">
     <div class="chip on" onclick="setFilter('all',this)">Wszystkie</div>
     <div class="chip" onclick="setFilter('open',this)">Open</div>
     <div class="chip" onclick="setFilter('nonote',this)">Bez notatki</div>
-    <div class="chip" onclick="setFilter('offer',this)">Oferta</div>
     <div class="chip" onclick="setFilter('warn',this)">Uwaga</div>
   </div>
   <div class="lead-list" id="lead-list"></div>
-  <button class="fab" onclick="openCfg()">⚙</button>
+  <button class="fab" onclick="openCfg()">⚙️</button>
 </div>
 
-<!-- DETAIL -->
+<!-- ===== DETAIL ===== -->
 <div id="screen-detail" class="screen hidden">
   <div class="hdr">
-    <button class="hdr-back" onclick="goBack()">←</button>
-    <div>
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="hdr-info">
       <div class="hdr-title" id="d-title"></div>
       <div class="hdr-sub" id="d-sub"></div>
     </div>
@@ -192,77 +205,107 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <div class="det-firma" id="d-firma"></div>
       <div class="det-tags" id="d-tags"></div>
     </div>
-    <div class="info-block">
-      <div class="irow"><span class="ilabel">Miasto</span><span class="ival" id="d-miasto"></span></div>
-      <div class="irow"><span class="ilabel">Email</span><span class="ival em" id="d-email"></span></div>
-      <div class="irow"><span class="ilabel">Oferta</span><span class="ival" id="d-oferta"></span></div>
+    <div class="info-grid">
+      <div class="irow"><span class="ilbl">📍 Miasto</span><span class="ival" id="d-miasto"></span></div>
+      <div class="irow"><span class="ilbl">📧 Email</span><span class="ival link" id="d-email"></span></div>
+      <div class="irow"><span class="ilbl">📋 Oferta</span><span class="ival" id="d-oferta"></span></div>
     </div>
-    <div class="note-block">
-      <div class="note-lbl">// notatka</div>
-      <div class="note-val" id="d-note"></div>
+    <div class="note-section">
+      <div class="note-lbl">Notatka</div>
+      <div id="d-note"></div>
     </div>
     <div class="actions">
       <button class="btn btn-call" onclick="callLead()">
-        <span class="btn-icon">📞</span><span id="call-num">Zadzwoń</span>
+        <span class="bicon">📞</span><span id="call-num">Zadzwoń</span>
       </button>
-      <button class="btn btn-sec" onclick="openNote()">
-        <span class="btn-icon">🎙</span><span>Notatka</span>
+      <button class="btn btn-gray" onclick="openNote()">
+        <span class="bicon">🎙️</span><span>Notatka</span>
       </button>
-      <button class="btn btn-sec" onclick="openOffer()">
-        <span class="btn-icon">📩</span><span>Oferta</span>
+      <button class="btn btn-gray" onclick="openOffer()">
+        <span class="bicon">📩</span><span>Oferta</span>
       </button>
-      <button class="btn btn-sec" onclick="doReminder()">
-        <span class="btn-icon">⏰</span><span>Przypomnij</span>
+      <button class="btn btn-gray" onclick="openCal()">
+        <span class="bicon">📅</span><span>Przypomnij</span>
       </button>
       <button class="btn btn-next" onclick="nextLead()">
-        <span>Następny</span><span>→</span>
+        <span>Następny lead →</span>
       </button>
     </div>
   </div>
 </div>
 
-<!-- NOTE -->
+<!-- ===== NOTE ===== -->
 <div id="screen-note" class="screen hidden">
   <div class="hdr">
-    <button class="hdr-back" onclick="closeNote()">←</button>
-    <div>
-      <div class="hdr-title">// notatka głosowa</div>
+    <button class="back-btn" onclick="closeNote()">←</button>
+    <div class="hdr-info">
+      <div class="hdr-title">Notatka głosowa</div>
       <div class="hdr-sub" id="note-for"></div>
     </div>
   </div>
   <div class="note-body">
-    <textarea class="note-ta" id="note-ta" placeholder="Wpisz lub podyktuj..."></textarea>
+    <textarea class="note-ta" id="note-ta" placeholder="Wpisz lub naciśnij mikrofon i mów..."></textarea>
     <button class="voice-btn" id="vbtn" onclick="toggleVoice()">
-      <span id="vicon">🎙</span><span id="vlbl">Naciśnij i mów</span>
+      <span id="vicon">🎙️</span><span id="vlbl">Naciśnij i mów</span>
     </button>
-    <button class="save-btn" onclick="saveNote()">Zapisz notatkę</button>
+    <button class="save-btn" onclick="saveNote()">💾 Zapisz notatkę</button>
   </div>
 </div>
 
-<!-- OFFER -->
+<!-- ===== OFFER ===== -->
 <div id="screen-offer" class="screen hidden">
   <div class="hdr">
-    <button class="hdr-back" onclick="closeOffer()">←</button>
-    <div>
-      <div class="hdr-title">// wybierz ofertę</div>
+    <button class="back-btn" onclick="closeOffer()">←</button>
+    <div class="hdr-info">
+      <div class="hdr-title">Wybierz ofertę</div>
       <div class="hdr-sub" id="offer-for"></div>
     </div>
   </div>
   <div class="offer-scroll" id="offer-list"></div>
-  <button class="send-btn" id="send-btn" onclick="sendOffer()" disabled>Wyślij ofertę</button>
+  <button class="send-btn" id="send-btn" onclick="sendOffer()" disabled>📩 Wyślij ofertę</button>
 </div>
 
-<!-- SETTINGS -->
-<div class="modal-bg" id="cfg-modal" onclick="closeCfg(event)">
+<!-- ===== CALENDAR ===== -->
+<div id="screen-cal" class="screen hidden">
+  <div class="hdr">
+    <button class="back-btn" onclick="closeCal()">←</button>
+    <div class="hdr-info">
+      <div class="hdr-title">Ustaw przypomnienie</div>
+      <div class="hdr-sub" id="cal-for"></div>
+    </div>
+  </div>
+  <div class="cal-body">
+    <div>
+      <div class="cal-lbl">Szybki wybór</div>
+      <div class="cal-presets">
+        <div class="preset" onclick="setPreset(this,'jutro 9:00')">Jutro 9:00</div>
+        <div class="preset" onclick="setPreset(this,'jutro 12:00')">Jutro 12:00</div>
+        <div class="preset" onclick="setPreset(this,'jutro 15:00')">Jutro 15:00</div>
+        <div class="preset" onclick="setPreset(this,'za 2 dni 10:00')">Za 2 dni</div>
+        <div class="preset" onclick="setPreset(this,'za tydzień')">Za tydzień</div>
+      </div>
+    </div>
+    <div>
+      <div class="cal-lbl">Data i godzina</div>
+      <input class="cal-input" type="datetime-local" id="cal-dt">
+    </div>
+    <div>
+      <div class="cal-lbl">Notatka do przypomnienia</div>
+      <input class="cal-input" id="cal-note" placeholder="np. omówić cenę, wysłać fakturę...">
+    </div>
+    <button class="cal-save" onclick="saveCal()">📅 Dodaj do Google Calendar</button>
+  </div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<div class="modal-bg" id="cfg-modal" onclick="closeCfgModal(event)">
   <div class="modal">
-    <div class="modal-title">// konfiguracja n8n</div>
+    <div class="modal-title">⚙️ Ustawienia n8n</div>
     <div class="mlbl">Webhook — notatka</div>
     <input class="minput" id="c-note" type="url" placeholder="https://n8n.../webhook/note">
     <div class="mlbl">Webhook — oferta</div>
     <input class="minput" id="c-offer" type="url" placeholder="https://n8n.../webhook/offer">
-    <div class="mlbl">Webhook — przypomnienie</div>
-    <input class="minput" id="c-rem" type="url" placeholder="https://n8n.../webhook/reminder">
-    <div class="mlbl">Twój email</div>
+    <div class="mlbl">Twój email (nadawca)</div>
     <input class="minput" id="c-email" type="email" placeholder="krystian@vertextrading.eu">
     <button class="msave" onclick="saveCfg()">Zapisz</button>
   </div>
@@ -271,78 +314,65 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 <div class="toast" id="toast"></div>
 
 <script>
-const LEADS = [{"idx":1,"imie":"Tomas","phone":"+421 904 458 874","email":"jamesdurica@gmail.com","miasto":"Poprad","firma":"Tradstol","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":2,"imie":"Martin","phone":"+421 940 875 601","email":"krajco285.mk@gmail.com","miasto":"Hájske","firma":"Autoprofit Galanta","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":3,"imie":"Michal","phone":"+421 949 443 537","email":"takacsmuchal765@gmail.com","miasto":"Liptovsky Mikulas","firma":"Čo Ma Nezabije","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":4,"imie":"Bumi","phone":"+421 905 972 388","email":"bumisro3@gmail.com","miasto":"Kosice","firma":"Bumi team sro","notatka":"","oferta_status":"sent offer 09/04","status":"6800eur","kiedy":""},{"idx":5,"imie":"Ladislav","phone":"+421 949 335 096","email":"kolpetmarkovce@gmail.com","miasto":"Kosice","firma":"SZČO","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":6,"imie":"Jozef","phone":"+421 905 607 581","email":"krajmerjozef@gmail.com","miasto":"Bratislava","firma":"Kraintek sro","notatka":"","oferta_status":"sent offer 09/04","status":"wyslac oferte","kiedy":""},{"idx":7,"imie":"Ludovit","phone":"+421 910 984 907","email":"ludourbanik@centrum.sk","miasto":"Breza","firma":"Voľná noha","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":8,"imie":"Jozef","phone":"+421 907 554 889","email":"jozefpalko12345@gmail.com","miasto":"Malý Šariš","firma":"Súkromná osoba","notatka":"","oferta_status":"sent offer 09/04","status":"oferte wyslac","kiedy":""},{"idx":9,"imie":"Marek","phone":"+421 908 907 970","email":"marko.wlet@gmail.com","miasto":"Sielnica","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera","kiedy":""},{"idx":10,"imie":"Ivan","phone":"+421 903 421 707","email":"capris009@gmail.com","miasto":"Bosaca","firma":"CAPRIS s.r.o","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":11,"imie":"Alexander","phone":"+421 944 271 204","email":"64lexis@gmail.com","miasto":"Sturovo","firma":"Národný energetický projekt","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":12,"imie":"Jaroslav","phone":"+421 907 976 017","email":"jaroslavrichnavsky@centrum.sk","miasto":"Richnava","firma":"Autoelektronika-Chiping","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":13,"imie":"Jaroslav","phone":"+421 918 517 997","email":"jarostritz@pobox.sk","miasto":"Lipovec","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":14,"imie":"Jozef","phone":"+421 904 825 391","email":"scasny37@gmail.com","miasto":"Senec","firma":"Multiplastservis","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":15,"imie":"Martin","phone":"+421 902 722 364","email":"martin.pallai@gmail.com","miasto":"Hažín","firma":"Betform","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":16,"imie":"Peter","phone":"+421 911 874 753","email":"nuttapeter@centrum.sk","miasto":"Babín","firma":"Štátny zvarač","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":17,"imie":"Jozef","phone":"+421 948 915 923","email":"tetto@tetto-strecha.eu","miasto":"Nové Zámky","firma":"Tetto strecha sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":18,"imie":"Radovan","phone":"+421 907 941 325","email":"servis.haniska@gmail.com","miasto":"Presov","firma":"Servis car s.r.o.","notatka":"","oferta_status":"sent offer 09/04","status":"prezentacja w maju","kiedy":""},{"idx":19,"imie":"Karol","phone":"+421 948 927 775","email":"karolkubalek9@gmail.com","miasto":"Handlová","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":20,"imie":"Jan","phone":"+421 903 534 597","email":"janmihalciak5871@gmail.com","miasto":"Kokava n/R","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":21,"imie":"Milan","phone":"+420 602 804 882","email":"rehna01@seznam.cz","miasto":"Ústí nad Labem","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":22,"imie":"Mirouš","phone":"+420 777 874 333","email":"andelinmexicky@gmail.com","miasto":"Praha","firma":"Slunéčko sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":23,"imie":"Václav","phone":"+420 607 804 881","email":"lavica107@gmail.com","miasto":"Nýřany","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":24,"imie":"Pavel","phone":"+420 777 832 541","email":"medakrtek@seznam.cz","miasto":"Hronov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":25,"imie":"Jaroslav","phone":"+420 607 234 380","email":"jak01@seznam.cz","miasto":"Praha","firma":"Kotana","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":26,"imie":"Petr","phone":"+420 739 691 859","email":"dobryprdy@seznam.cz","miasto":"Baška","firma":"Dílník","notatka":"","oferta_status":"za drogo","status":"Open","kiedy":""},{"idx":27,"imie":"Roman","phone":"+420 776 892 857","email":"rroubal@seznam.cz","miasto":"Kramolna","firma":"Autoslužby Radek Vik","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":28,"imie":"Zdeněk","phone":"+420 777 804 922","email":"zdeneksebek.sebi@gmail.com","miasto":"Mariánské Radčice","firma":"HOPI Klášterec","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":29,"imie":"Petr","phone":"+420 605 724 729","email":"petr.pape@seznam.cz","miasto":"Silheřovice","firma":"DSC","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":30,"imie":"Jan","phone":"+420 608 606 494","email":"jeifler@centrum.cz","miasto":"Vracov","firma":"Eifler bat og motor","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":31,"imie":"Pavel","phone":"+420 702 122 550","email":"zetnian@email.cz","miasto":"Praha","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":32,"imie":"Jaroslav","phone":"+420 777 153 358","email":"kubesa.czo@seznam.cz","miasto":"Zasova","firma":"Jaroslav Kubeša","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":33,"imie":"Radek","phone":"+420 603 354 081","email":"radek.risica@seznam.cz","miasto":"Halenkov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":34,"imie":"Mirek","phone":"+420 777 693 632","email":"miroslavlacek8@gmail.com","miasto":"Karviná","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":35,"imie":"Vladimír","phone":"+420 607 554 406","email":"lappy@seznam.cz","miasto":"Uhříněves","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":36,"imie":"George","phone":"+420 608 899 954","email":"sufu@volny.cz","miasto":"České Budějovice","firma":"Jiří Chvála","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":37,"imie":"Tomáš","phone":"+420 777 802 850","email":"tom.hubacek@seznam.cz","miasto":"Praha","firma":"Kurzylodnimotory","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""},{"idx":38,"imie":"David","phone":"+420 608 346 104","email":"slashman@seznam.cz","miasto":"Nýřany","firma":"Individual Contractor","notatka":"","oferta_status":"sent offer 09/04","status":"Open","kiedy":""}];
+const LEADS = [{"idx":1,"imie":"Tomas","phone":"+421 904 458 874","email":"jamesdurica@gmail.com","miasto":"Poprad","firma":"Tradstol","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera"},{"idx":2,"imie":"Martin","phone":"+421 940 875 601","email":"krajco285.mk@gmail.com","miasto":"Hájske","firma":"Autoprofit Galanta","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera"},{"idx":3,"imie":"Michal","phone":"+421 949 443 537","email":"takacsmuchal765@gmail.com","miasto":"Liptovsky Mikulas","firma":"Čo Ma Nezabije","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":4,"imie":"Bumi","phone":"+421 905 972 388","email":"bumisro3@gmail.com","miasto":"Kosice","firma":"Bumi team sro","notatka":"","oferta_status":"sent offer 09/04","status":"6800eur"},{"idx":5,"imie":"Ladislav","phone":"+421 949 335 096","email":"kolpetmarkovce@gmail.com","miasto":"Kosice","firma":"SZČO","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":6,"imie":"Jozef","phone":"+421 905 607 581","email":"krajmerjozef@gmail.com","miasto":"Bratislava","firma":"Kraintek sro","notatka":"","oferta_status":"sent offer 09/04","status":"wyslac oferte"},{"idx":7,"imie":"Ludovit","phone":"+421 910 984 907","email":"ludourbanik@centrum.sk","miasto":"Breza","firma":"Voľná noha","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":8,"imie":"Jozef","phone":"+421 907 554 889","email":"jozefpalko12345@gmail.com","miasto":"Malý Šariš","firma":"Súkromná osoba","notatka":"","oferta_status":"sent offer 09/04","status":"wyslac oferte"},{"idx":9,"imie":"Marek","phone":"+421 908 907 970","email":"marko.wlet@gmail.com","miasto":"Sielnica","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"nie odbiera"},{"idx":10,"imie":"Ivan","phone":"+421 903 421 707","email":"capris009@gmail.com","miasto":"Bosaca","firma":"CAPRIS s.r.o","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":11,"imie":"Alexander","phone":"+421 944 271 204","email":"64lexis@gmail.com","miasto":"Sturovo","firma":"Nár. energetický projekt","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":12,"imie":"Jaroslav","phone":"+421 907 976 017","email":"jaroslavrichnavsky@centrum.sk","miasto":"Richnava","firma":"Autoelektronika-Chiping","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":13,"imie":"Jaroslav","phone":"+421 918 517 997","email":"jarostritz@pobox.sk","miasto":"Lipovec","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":14,"imie":"Jozef","phone":"+421 904 825 391","email":"scasny37@gmail.com","miasto":"Senec","firma":"Multiplastservis","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":15,"imie":"Martin","phone":"+421 902 722 364","email":"martin.pallai@gmail.com","miasto":"Hažín","firma":"Betform","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":16,"imie":"Peter","phone":"+421 911 874 753","email":"nuttapeter@centrum.sk","miasto":"Babín","firma":"Štátny zvarač","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":17,"imie":"Jozef","phone":"+421 948 915 923","email":"tetto@tetto-strecha.eu","miasto":"Nové Zámky","firma":"Tetto strecha sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":18,"imie":"Radovan","phone":"+421 907 941 325","email":"servis.haniska@gmail.com","miasto":"Presov","firma":"Servis car s.r.o.","notatka":"","oferta_status":"sent offer 09/04","status":"prezentacja w maju"},{"idx":19,"imie":"Karol","phone":"+421 948 927 775","email":"karolkubalek9@gmail.com","miasto":"Handlová","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":20,"imie":"Jan","phone":"+421 903 534 597","email":"janmihalciak5871@gmail.com","miasto":"Kokava n/R","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":21,"imie":"Milan","phone":"+420 602 804 882","email":"rehna01@seznam.cz","miasto":"Ústí nad Labem","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":22,"imie":"Mirouš","phone":"+420 777 874 333","email":"andelinmexicky@gmail.com","miasto":"Praha","firma":"Slunéčko sro","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":23,"imie":"Václav","phone":"+420 607 804 881","email":"lavica107@gmail.com","miasto":"Nýřany","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":24,"imie":"Pavel","phone":"+420 777 832 541","email":"medakrtek@seznam.cz","miasto":"Hronov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":25,"imie":"Jaroslav","phone":"+420 607 234 380","email":"jak01@seznam.cz","miasto":"Praha","firma":"Kotana","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":26,"imie":"Petr","phone":"+420 739 691 859","email":"dobryprdy@seznam.cz","miasto":"Baška","firma":"Dílník","notatka":"","oferta_status":"za drogo","status":"Open"},{"idx":27,"imie":"Roman","phone":"+420 776 892 857","email":"rroubal@seznam.cz","miasto":"Kramolna","firma":"Autoslužby Radek Vik","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":28,"imie":"Zdeněk","phone":"+420 777 804 922","email":"zdeneksebek.sebi@gmail.com","miasto":"Mariánské Radčice","firma":"HOPI Klášterec","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":29,"imie":"Petr","phone":"+420 605 724 729","email":"petr.pape@seznam.cz","miasto":"Silheřovice","firma":"DSC","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":30,"imie":"Jan","phone":"+420 608 606 494","email":"jeifler@centrum.cz","miasto":"Vracov","firma":"Eifler bat og motor","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":31,"imie":"Pavel","phone":"+420 702 122 550","email":"zetnian@email.cz","miasto":"Praha","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":32,"imie":"Jaroslav","phone":"+420 777 153 358","email":"kubesa.czo@seznam.cz","miasto":"Zasova","firma":"Jaroslav Kubeša","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":33,"imie":"Radek","phone":"+420 603 354 081","email":"radek.risica@seznam.cz","miasto":"Halenkov","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":34,"imie":"Mirek","phone":"+420 777 693 632","email":"miroslavlacek8@gmail.com","miasto":"Karviná","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":35,"imie":"Vladimír","phone":"+420 607 554 406","email":"lappy@seznam.cz","miasto":"Uhříněves","firma":"","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":36,"imie":"George","phone":"+420 608 899 954","email":"sufu@volny.cz","miasto":"České Budějovice","firma":"Jiří Chvála","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":37,"imie":"Tomáš","phone":"+420 777 802 850","email":"tom.hubacek@seznam.cz","miasto":"Praha","firma":"Kurzylodnimotory","notatka":"","oferta_status":"sent offer 09/04","status":"Open"},{"idx":38,"imie":"David","phone":"+420 608 346 104","email":"slashman@seznam.cz","miasto":"Nýřany","firma":"Individual Contractor","notatka":"","oferta_status":"sent offer 09/04","status":"Open"}];
 
 const OFFERS = [
   {id:"uc-cw2",title:"Laser Ciągły UC-CW2 2000W",desc:"Chłodzenie wodne · stal ciężka · spawalnictwo przemysłowe",price:"31 000 PLN",tag:"Top"},
-  {id:"cp-a3",title:"Laser Pulsacyjny CP-A3 300W",desc:"Chłodzenie powietrzem · mobilny · warsztaty i lżejsze zastosowania",price:"29 000 PLN",tag:"Mobilny"},
-  {id:"cp-b3",title:"Laser Pulsacyjny CP-B3 300W",desc:"Briefcase · ultra mobilny · idealne do wyjazdów",price:"28 000 PLN",tag:"Walizka"},
+  {id:"cp-a3",title:"Laser Pulsacyjny CP-A3 300W",desc:"Chłodzenie powietrzem · mobilny · warsztaty",price:"29 000 PLN",tag:"Mobilny"},
+  {id:"cp-b3",title:"Laser Pulsacyjny CP-B3 300W",desc:"Briefcase · ultra mobilny · wyjazdy serwisowe",price:"28 000 PLN",tag:"Walizka"},
   {id:"4w1",title:"Spawarka 4w1 AI",desc:"Laser + MIG + TIG + elektroda · pełny zestaw",price:"na zapytanie",tag:"Combo"},
 ];
 
-const WARN_STATUSES = ['nie odbiera','error','za drogo'];
+const WARN = ['nie odbiera','error','za drogo','brak'];
+let leads = LEADS.map(l=>({...l}));
+let curIdx = 0, curFilter = 'all', selOffer = null;
+let rec = null, isRec = false;
+let cfg = {nw:'',ow:'',em:''};
 
-let leads = LEADS.map(l => ({...l}));
-let curIdx = 0;
-let curFilter = 'all';
-let selOffer = null;
-let rec = null;
-let isRec = false;
-let cfg = {nw:'',ow:'',rw:'',em:''};
+try{const s=localStorage.getItem('rr_cfg');if(s)cfg={...cfg,...JSON.parse(s)};}catch(e){}
 
-try { const s = localStorage.getItem('rr_cfg'); if(s) cfg = {...cfg,...JSON.parse(s)}; } catch(e){}
-
-function loadNotes() {
-  try {
-    const s = localStorage.getItem('rr_notes');
-    if(!s) return;
-    const n = JSON.parse(s);
-    leads.forEach(l => { if(n[l.idx] !== undefined) l.notatka = n[l.idx]; });
-  } catch(e){}
+function loadNotes(){
+  try{const s=localStorage.getItem('rr_notes');if(!s)return;const n=JSON.parse(s);leads.forEach(l=>{if(n[l.idx]!==undefined)l.notatka=n[l.idx];});}catch(e){}
 }
-function saveNoteLocal(idx, text) {
-  try {
-    const s = localStorage.getItem('rr_notes');
-    const n = s ? JSON.parse(s) : {};
-    n[idx] = text;
-    localStorage.setItem('rr_notes', JSON.stringify(n));
-  } catch(e){}
+function persistNote(idx,text){
+  try{const s=localStorage.getItem('rr_notes');const n=s?JSON.parse(s):{};n[idx]=text;localStorage.setItem('rr_notes',JSON.stringify(n));}catch(e){}
 }
 loadNotes();
 
-function filtered() {
-  if(curFilter === 'open') return leads.filter(l => l.status === 'Open');
-  if(curFilter === 'nonote') return leads.filter(l => !l.notatka);
-  if(curFilter === 'offer') return leads.filter(l => l.oferta_status && l.oferta_status.toLowerCase().includes('sent'));
-  if(curFilter === 'warn') return leads.filter(l => WARN_STATUSES.some(w => l.status.toLowerCase().includes(w)));
+function isWarn(l){return WARN.some(w=>l.status.toLowerCase().includes(w));}
+
+function filtered(){
+  if(curFilter==='open') return leads.filter(l=>l.status==='Open');
+  if(curFilter==='nonote') return leads.filter(l=>!l.notatka);
+  if(curFilter==='warn') return leads.filter(l=>isWarn(l));
   return leads;
 }
 
-function setFilter(f, el) {
-  curFilter = f;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+function setFilter(f,el){
+  curFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   renderList();
 }
 
-function getBadge(l) {
-  if(l.notatka) return {cls:'b-note', txt:'✓ nota'};
-  if(WARN_STATUSES.some(w => l.status.toLowerCase().includes(w))) return {cls:'b-warn', txt:'uwaga'};
-  if(l.oferta_status && l.oferta_status.toLowerCase().includes('sent')) return {cls:'b-offer', txt:'oferta'};
-  return {cls:'b-open', txt:'open'};
+function getBadge(l){
+  if(l.notatka) return {cls:'b-note',txt:'✓ Notatka'};
+  if(isWarn(l)) return {cls:'b-warn',txt:'Uwaga'};
+  if(l.oferta_status&&l.oferta_status.toLowerCase().includes('sent')) return {cls:'b-offer',txt:'Oferta'};
+  return {cls:'b-open',txt:'Open'};
 }
 
-function renderList() {
-  const fl = filtered();
-  const done = leads.filter(l => l.notatka).length;
-  document.getElementById('list-sub').textContent = `${fl.length} targets · ${done} z notatką`;
-  document.getElementById('prog').style.width = Math.round(done/leads.length*100)+'%';
-  document.getElementById('prog-lbl').textContent = `>> ${done} / ${leads.length} obrobionych`;
-
-  document.getElementById('lead-list').innerHTML = fl.map(l => {
-    const b = getBadge(l);
-    const meta = [l.firma, l.miasto].filter(Boolean).join(' · ') || l.status || '—';
-    return `<div class="lcard ${l.notatka?'has-note':''}" onclick="openLead(${leads.indexOf(l)})">
+function renderList(){
+  const fl=filtered();
+  const done=leads.filter(l=>l.notatka).length;
+  document.getElementById('list-sub').textContent=`${fl.length} leadów · ${done} z notatką`;
+  document.getElementById('prog').style.width=Math.round(done/leads.length*100)+'%';
+  document.getElementById('prog-txt').textContent=`${done} / ${leads.length} obrobionych`;
+  document.getElementById('lead-list').innerHTML=fl.map(l=>{
+    const b=getBadge(l);
+    const warn=isWarn(l);
+    const meta=[l.firma,l.miasto].filter(Boolean).join(' · ')||l.status||'—';
+    return `<div class="lcard ${l.notatka?'has-note':''} ${warn?'has-warn':''}" onclick="openLead(${leads.indexOf(l)})">
       <div class="ava">${l.imie[0].toUpperCase()}</div>
       <div class="linfo">
         <div class="lname">${l.imie}${l.firma?' — '+l.firma:''}</div>
@@ -353,222 +383,214 @@ function renderList() {
   }).join('');
 }
 
-function openLead(i) {
-  curIdx = i;
-  showDetail();
-}
+function openLead(i){curIdx=i;showDetail();}
 
-function showDetail() {
-  const l = leads[curIdx];
-  const fl = filtered();
-  const pos = fl.indexOf(l);
-  document.getElementById('d-title').textContent = l.imie.toUpperCase() + ' · #' + l.idx;
-  document.getElementById('d-sub').textContent = `target ${pos+1} of ${fl.length}`;
-  document.getElementById('d-ava').textContent = l.imie[0].toUpperCase();
-  document.getElementById('d-name').textContent = l.imie;
-  document.getElementById('d-firma').textContent = l.firma || '—';
-  document.getElementById('d-miasto').textContent = l.miasto || '—';
-  document.getElementById('d-email').textContent = l.email || '—';
-  document.getElementById('d-oferta').textContent = l.oferta_status || '—';
-  document.getElementById('d-note').innerHTML = l.notatka
-    ? `<span>${l.notatka}</span>`
-    : `<span class="note-empty">// brak notatki</span>`;
-  document.getElementById('call-num').textContent = l.phone;
-  const tags = [l.status, l.kiedy].filter(Boolean);
-  document.getElementById('d-tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+function showDetail(){
+  const l=leads[curIdx];
+  const fl=filtered();
+  const pos=fl.indexOf(l);
+  document.getElementById('d-title').textContent=l.imie+' · #'+l.idx;
+  document.getElementById('d-sub').textContent=`Lead ${pos+1} z ${fl.length}`;
+  document.getElementById('d-ava').textContent=l.imie[0].toUpperCase();
+  document.getElementById('d-name').textContent=l.imie;
+  document.getElementById('d-firma').textContent=l.firma||'—';
+  document.getElementById('d-miasto').textContent=l.miasto||'—';
+  document.getElementById('d-email').textContent=l.email||'—';
+  document.getElementById('d-oferta').textContent=l.oferta_status||'—';
+  document.getElementById('d-note').innerHTML=l.notatka
+    ?`<div class="note-text">${l.notatka}</div>`
+    :`<div class="note-empty">Brak notatki — nagraj po rozmowie</div>`;
+  document.getElementById('call-num').textContent=l.phone;
+  const tags=[l.status].filter(Boolean);
+  document.getElementById('d-tags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
   showScreen('screen-detail','screen-list');
 }
 
-function callLead() {
-  const p = leads[curIdx].phone.replace(/\s/g,'');
-  window.location.href = 'tel:'+p;
+function callLead(){window.location.href='tel:'+leads[curIdx].phone.replace(/\s/g,'');}
+
+function nextLead(){
+  const fl=filtered();
+  const pos=fl.indexOf(leads[curIdx]);
+  if(pos<fl.length-1){curIdx=leads.indexOf(fl[pos+1]);showDetail();}
+  else toast('✅ Koniec listy!','ok');
 }
 
-function nextLead() {
-  const fl = filtered();
-  const pos = fl.indexOf(leads[curIdx]);
-  if(pos < fl.length-1) {
-    curIdx = leads.indexOf(fl[pos+1]);
-    showDetail();
-  } else {
-    toast('>> koniec listy', 'ok');
-  }
-}
-
-function goBack() {
-  showScreen('screen-list','screen-detail',true);
-  renderList();
-}
+function goBack(){showScreen('screen-list','screen-detail',true);renderList();}
 
 // NOTE
-function openNote() {
-  const l = leads[curIdx];
-  document.getElementById('note-for').textContent = l.imie + (l.firma ? ' · '+l.firma : '');
-  document.getElementById('note-ta').value = l.notatka || '';
+function openNote(){
+  const l=leads[curIdx];
+  document.getElementById('note-for').textContent=l.imie+(l.firma?' · '+l.firma:'');
+  document.getElementById('note-ta').value=l.notatka||'';
   showScreen('screen-note','screen-detail');
 }
-function closeNote() { stopVoice(); showScreen('screen-detail','screen-note',true); }
+function closeNote(){stopVoice();showScreen('screen-detail','screen-note',true);}
 
-function toggleVoice() {
+function toggleVoice(){
   if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
-    toast('>> brak API mowy w tej przeglądarce','err'); return;
+    toast('Brak API mowy — wpisz ręcznie','err');return;
   }
-  isRec ? stopVoice() : startVoice();
+  isRec?stopVoice():startVoice();
 }
 
-function startVoice() {
-  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
-  rec = new SR();
-  rec.lang = 'pl-PL';
-  rec.continuous = true;
-  rec.interimResults = true;
-
-  // FIX: capture baseline text once, never re-read from textarea during session
-  const baseline = document.getElementById('note-ta').value.trim();
-  let final = baseline;
-
-  rec.onresult = e => {
-    let interim = '';
-    for(let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript.trim();
-      if(e.results[i].isFinal) final += (final?' ':'')+t;
-      else interim = t;
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  rec=new SR();rec.lang='pl-PL';rec.continuous=true;rec.interimResults=true;
+  const baseline=document.getElementById('note-ta').value.trim();
+  let final=baseline;
+  rec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript.trim();
+      if(e.results[i].isFinal) final+=(final?' ':'')+t;
+      else interim=t;
     }
-    // show interim as preview only, never mixed into final
-    document.getElementById('note-ta').value = final + (interim ? '\n[…] '+interim : '');
+    document.getElementById('note-ta').value=final+(interim?'\n[…] '+interim:'');
   };
-
-  rec.onend = () => {
-    // clean up interim marker on stop
-    const ta = document.getElementById('note-ta');
-    ta.value = ta.value.replace(/\n\[…\].*$/,'');
-    isRec = false; updateVUI();
+  rec.onend=()=>{
+    const ta=document.getElementById('note-ta');
+    ta.value=ta.value.replace(/\n\[…\].*$/,'');
+    isRec=false;updateVUI();
   };
-  rec.onerror = () => { isRec = false; updateVUI(); };
-  rec.start();
-  isRec = true; updateVUI();
+  rec.onerror=()=>{isRec=false;updateVUI();};
+  rec.start();isRec=true;updateVUI();
+}
+function stopVoice(){if(rec)rec.stop();isRec=false;updateVUI();}
+function updateVUI(){
+  document.getElementById('vicon').textContent=isRec?'⏹️':'🎙️';
+  document.getElementById('vlbl').textContent=isRec?'Nagrywam — naciśnij by zatrzymać':'Naciśnij i mów';
+  document.getElementById('vbtn').classList.toggle('on',isRec);
 }
 
-function stopVoice() {
-  if(rec) rec.stop();
-  isRec = false; updateVUI();
-}
-
-function updateVUI() {
-  document.getElementById('vicon').textContent = isRec ? '⏹' : '🎙';
-  document.getElementById('vlbl').textContent = isRec ? 'Nagrywam — naciśnij by zatrzymać' : 'Naciśnij i mów';
-  document.getElementById('vbtn').classList.toggle('on', isRec);
-}
-
-async function saveNote() {
+async function saveNote(){
   stopVoice();
-  const text = document.getElementById('note-ta').value.replace(/\n\[…\].*$/,'').trim();
-  if(!text){ toast('>> notatka pusta','err'); return; }
-  const l = leads[curIdx];
-  l.notatka = text;
-  saveNoteLocal(l.idx, text);
-  if(cfg.nw) {
-    try {
+  const text=document.getElementById('note-ta').value.replace(/\n\[…\].*$/,'').trim();
+  if(!text){toast('Notatka jest pusta','err');return;}
+  const l=leads[curIdx];
+  l.notatka=text;persistNote(l.idx,text);
+  if(cfg.nw){
+    try{
       await fetch(cfg.nw,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,phone:l.phone,email:l.email,notatka:text,ts:new Date().toISOString()})});
-      toast('>> notatka → google sheet','ok');
-    } catch(e){ toast('>> zapisano lokalnie','ok'); }
-  } else { toast('>> zapisano lokalnie','ok'); }
-  closeNote();
-  showDetail();
+      toast('✅ Notatka → Google Sheet','ok');
+    }catch(e){toast('✅ Zapisano lokalnie','ok');}
+  }else{toast('✅ Zapisano lokalnie','ok');}
+  closeNote();showDetail();
 }
 
 // OFFER
-function openOffer() {
-  const l = leads[curIdx];
-  document.getElementById('offer-for').textContent = '→ '+l.imie+' · '+l.email;
-  selOffer = null;
-  const btn = document.getElementById('send-btn');
-  btn.disabled = true;
-  document.getElementById('offer-list').innerHTML = OFFERS.map(o =>
-    `<div class="ocard" id="oc-${o.id}" onclick="selOfferFn('${o.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div class="otitle">${o.title}</div>
-        <span class="otag">${o.tag}</span>
-      </div>
+function openOffer(){
+  const l=leads[curIdx];
+  document.getElementById('offer-for').textContent='→ '+l.imie+' · '+l.email;
+  selOffer=null;
+  document.getElementById('send-btn').disabled=true;
+  document.getElementById('offer-list').innerHTML=OFFERS.map(o=>
+    `<div class="ocard" id="oc-${o.id}" onclick="pickOffer('${o.id}')">
+      <div class="otag-row"><div class="otitle">${o.title}</div><span class="otag">${o.tag}</span></div>
       <div class="odesc">${o.desc}</div>
-      <div class="oprice">${o.price}</div>
+      <div class="oprice">${o.price} netto</div>
     </div>`
   ).join('');
   showScreen('screen-offer','screen-detail');
 }
-
-function selOfferFn(id) {
-  selOffer = OFFERS.find(o => o.id===id);
-  document.querySelectorAll('.ocard').forEach(c => c.classList.remove('sel'));
+function pickOffer(id){
+  selOffer=OFFERS.find(o=>o.id===id);
+  document.querySelectorAll('.ocard').forEach(c=>c.classList.remove('sel'));
   document.getElementById('oc-'+id).classList.add('sel');
-  document.getElementById('send-btn').disabled = false;
+  document.getElementById('send-btn').disabled=false;
 }
-
-function closeOffer() { showScreen('screen-detail','screen-offer',true); }
-
-async function sendOffer() {
-  if(!selOffer) return;
-  const l = leads[curIdx];
-  if(cfg.ow) {
-    try {
+function closeOffer(){showScreen('screen-detail','screen-offer',true);}
+async function sendOffer(){
+  if(!selOffer)return;
+  const l=leads[curIdx];
+  if(cfg.ow){
+    try{
       await fetch(cfg.ow,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,email:l.email,
           offer_id:selOffer.id,offer_title:selOffer.title,sender:cfg.em,ts:new Date().toISOString()})});
-      l.oferta_status = 'sent '+new Date().toLocaleDateString('pl');
-      toast('>> oferta wysłana','ok');
-    } catch(e){ toast('>> brak połączenia n8n','err'); }
-  } else { toast('>> skonfiguruj webhook oferty','err'); }
-  closeOffer(); showDetail();
+      l.oferta_status='sent '+new Date().toLocaleDateString('pl');
+      toast('📩 Oferta wysłana!','ok');
+    }catch(e){toast('Brak połączenia n8n','err');}
+  }else{toast('Skonfiguruj webhook oferty','err');}
+  closeOffer();showDetail();
 }
 
-// REMINDER
-function doReminder() {
-  const l = leads[curIdx];
-  const t = prompt(`Kiedy zadzwonić do ${l.imie}?\n(np. jutro 10:00)`);
-  if(!t) return;
-  if(cfg.rw) {
-    fetch(cfg.rw,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({idx:l.idx,imie:l.imie,phone:l.phone,reminder:t,ts:new Date().toISOString()})})
-      .then(()=>toast('>> reminder ustawiony','ok'))
-      .catch(()=>toast('>> brak połączenia n8n','err'));
-  } else { toast('>> '+t,'ok'); }
+// CALENDAR - Google Calendar deep link
+function openCal(){
+  const l=leads[curIdx];
+  document.getElementById('cal-for').textContent=l.imie+(l.firma?' · '+l.firma:'');
+  document.getElementById('cal-note').value='Oddzwoń: '+l.imie+(l.firma?' ('+l.firma+')':'')+' · '+l.phone;
+  // Set default to tomorrow 9am
+  const d=new Date();d.setDate(d.getDate()+1);d.setHours(9,0,0,0);
+  document.getElementById('cal-dt').value=d.toISOString().slice(0,16);
+  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));
+  showScreen('screen-cal','screen-detail');
+}
+function closeCal(){showScreen('screen-detail','screen-cal',true);}
+
+function setPreset(el,txt){
+  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  const now=new Date();
+  if(txt.includes('jutro 9')) {now.setDate(now.getDate()+1);now.setHours(9,0,0,0);}
+  else if(txt.includes('jutro 12')) {now.setDate(now.getDate()+1);now.setHours(12,0,0,0);}
+  else if(txt.includes('jutro 15')) {now.setDate(now.getDate()+1);now.setHours(15,0,0,0);}
+  else if(txt.includes('2 dni')) {now.setDate(now.getDate()+2);now.setHours(10,0,0,0);}
+  else if(txt.includes('tydzień')) {now.setDate(now.getDate()+7);now.setHours(9,0,0,0);}
+  document.getElementById('cal-dt').value=now.toISOString().slice(0,16);
+}
+
+function saveCal(){
+  const l=leads[curIdx];
+  const dtVal=document.getElementById('cal-dt').value;
+  const note=document.getElementById('cal-note').value;
+  if(!dtVal){toast('Wybierz datę','err');return;}
+
+  // Build Google Calendar URL
+  const start=new Date(dtVal);
+  const end=new Date(start.getTime()+30*60000); // +30min
+  const fmt=d=>d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const title=encodeURIComponent('📞 Oddzwoń: '+l.imie+(l.firma?' — '+l.firma:''));
+  const details=encodeURIComponent(note+'\n\nTel: '+l.phone+'\nEmail: '+l.email);
+  const gcalUrl=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(start)}/${fmt(end)}&details=${details}`;
+
+  window.open(gcalUrl,'_blank');
+  toast('📅 Otwieram Google Calendar','info');
+  closeCal();
 }
 
 // SCREENS
-function showScreen(showId, hideId, back) {
-  const s = document.getElementById(showId);
-  const h = document.getElementById(hideId);
-  if(back){ h.classList.add('hidden'); s.classList.remove('hidden','slide-left'); }
-  else { h.classList.add('slide-left'); s.classList.remove('hidden'); }
+function showScreen(showId,hideId,back){
+  const s=document.getElementById(showId);
+  const h=document.getElementById(hideId);
+  if(back){h.classList.add('hidden');s.classList.remove('hidden','slide-left');}
+  else{h.classList.add('slide-left');s.classList.remove('hidden');}
 }
 
 // CONFIG
-function openCfg() {
-  document.getElementById('c-note').value = cfg.nw;
-  document.getElementById('c-offer').value = cfg.ow;
-  document.getElementById('c-rem').value = cfg.rw;
-  document.getElementById('c-email').value = cfg.em;
+function openCfg(){
+  document.getElementById('c-note').value=cfg.nw;
+  document.getElementById('c-offer').value=cfg.ow;
+  document.getElementById('c-email').value=cfg.em;
   document.getElementById('cfg-modal').classList.add('open');
 }
-function closeCfg(e) { if(e.target===document.getElementById('cfg-modal')) document.getElementById('cfg-modal').classList.remove('open'); }
-function saveCfg() {
-  cfg = {nw:document.getElementById('c-note').value.trim(),
-         ow:document.getElementById('c-offer').value.trim(),
-         rw:document.getElementById('c-rem').value.trim(),
-         em:document.getElementById('c-email').value.trim()};
-  try { localStorage.setItem('rr_cfg',JSON.stringify(cfg)); } catch(e){}
+function closeCfgModal(e){if(e.target===document.getElementById('cfg-modal'))document.getElementById('cfg-modal').classList.remove('open');}
+function saveCfg(){
+  cfg={nw:document.getElementById('c-note').value.trim(),
+       ow:document.getElementById('c-offer').value.trim(),
+       em:document.getElementById('c-email').value.trim()};
+  try{localStorage.setItem('rr_cfg',JSON.stringify(cfg));}catch(e){}
   document.getElementById('cfg-modal').classList.remove('open');
-  toast('>> config saved','ok');
+  toast('✅ Zapisano','ok');
 }
 
 // TOAST
-let toastT;
-function toast(msg, type) {
-  clearTimeout(toastT);
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast show '+(type||'');
-  toastT = setTimeout(()=>t.classList.remove('show'),2800);
+let tt;
+function toast(msg,type){
+  clearTimeout(tt);
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+(type||'');
+  tt=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
 renderList();
