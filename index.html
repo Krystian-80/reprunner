@@ -2,628 +2,383 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RepRunner</title>
 <style>
-:root {
-  --bg: #0a0a0a;
-  --s1: #141414;
-  --s2: #1e1e1e;
-  --s3: #282828;
-  --border: #2a2a2a;
-  --border2: #383838;
-  --accent: #ffffff;
-  --accent2: #e0e0e0;
-  --blue: #4a9eff;
-  --green: #2ecc71;
-  --green2: #27ae60;
-  --red: #e74c3c;
-  --amber: #f39c12;
-  --text: #f0f0f0;
-  --text2: #a0a0a0;
-  --text3: #606060;
-  --r: 8px;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;}
-
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:transform .22s cubic-bezier(.4,0,.2,1),opacity .22s;}
-.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
-.screen.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none;}
-
-/* HEADER */
-.hdr{padding:52px 20px 14px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:1px solid var(--border);}
-.back-btn{width:40px;height:40px;border-radius:var(--r);background:var(--s2);border:1px solid var(--border2);color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
-.hdr-info{flex:1;}
-.hdr-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.2px;}
-.hdr-sub{font-size:13px;color:var(--text3);margin-top:2px;}
-
-/* LIST SCREEN */
-#screen-list{background:var(--bg);}
-.list-head{padding:52px 20px 0;flex-shrink:0;}
-.app-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.app-title{font-size:34px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1;}
-.app-sub{font-size:14px;color:var(--text3);margin-top:6px;}
-
-.prog-section{padding:14px 20px 0;flex-shrink:0;}
-.prog-track{height:2px;background:var(--s3);}
-.prog-bar{height:100%;background:var(--blue);transition:width .4s;}
-.prog-text{font-size:12px;color:var(--text3);margin-top:5px;}
-
-.filter-row{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
-.filter-row::-webkit-scrollbar{display:none;}
-.chip{flex-shrink:0;padding:7px 14px;border-radius:20px;background:var(--s1);border:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .12s;}
-.chip.on{background:var(--accent);color:#000;border-color:var(--accent);}
-
-.lead-list{flex:1;overflow-y:auto;padding:4px 20px 100px;scrollbar-width:none;}
-.lead-list::-webkit-scrollbar{display:none;}
-
-.lcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background .1s;}
-.lcard:active{background:var(--s2);}
-.lcard.has-note{border-left:3px solid var(--green);}
-.lcard.has-warn{border-left:3px solid var(--red);}
-
-.ava{width:48px;height:48px;border-radius:var(--r);background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;color:var(--text);border:1px solid var(--border2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;color:#f0f0f0;font-family:system-ui,sans-serif;}
+.top{padding:48px 20px 12px;}
+.label{font-size:11px;font-weight:600;color:#606060;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+h1{font-size:32px;font-weight:700;}
+.sub{font-size:14px;color:#606060;margin-top:4px;}
+.prog-wrap{padding:10px 20px 0;}
+.prog-track{height:2px;background:#1e1e1e;}
+.prog-bar{height:100%;background:#4a9eff;transition:width .4s;width:0%;}
+.prog-txt{font-size:12px;color:#606060;margin-top:4px;}
+.filters{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;scrollbar-width:none;}
+.chip{flex-shrink:0;padding:7px 14px;border-radius:20px;background:#141414;border:1px solid #2a2a2a;font-size:13px;color:#606060;cursor:pointer;}
+.chip.on{background:#fff;color:#000;border-color:#fff;}
+.list{padding:8px 20px 100px;overflow-y:auto;height:calc(100vh - 175px);scrollbar-width:none;}
+.card{background:#141414;border:1px solid #2a2a2a;border-left:3px solid #2a2a2a;border-radius:8px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;}
+.card:active{background:#1e1e1e;}
+.card.has-note{border-left-color:#2ecc71;}
+.card.is-hot{border-left-color:#e74c3c;}
+.ava{width:46px;height:46px;border-radius:8px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex-shrink:0;}
 .linfo{flex:1;min-width:0;}
-.lname{font-size:16px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lmeta{font-size:13px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-.badge{flex-shrink:0;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.3px;}
-.b-note{background:rgba(46,204,113,.15);color:var(--green);}
-.b-open{background:var(--s3);color:var(--text3);}
-.b-warn{background:rgba(231,76,60,.15);color:var(--red);}
-.b-offer{background:rgba(74,158,255,.15);color:var(--blue);}
-
-.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--s2);border:1px solid var(--border2);color:var(--text2);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
-
-/* DETAIL SCREEN */
-#screen-detail{background:var(--bg);}
-.det-scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
-.det-scroll::-webkit-scrollbar{display:none;}
-
-.det-hero{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
-.det-ava{width:60px;height:60px;border-radius:12px;background:var(--s2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--text);margin-bottom:14px;}
-.det-name{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.4px;}
-.det-firma{font-size:14px;color:var(--text3);margin-top:4px;}
-.det-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
-.tag{padding:4px 10px;border-radius:6px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--text3);}
-
-.info-grid{margin:16px 20px 0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.irow{background:var(--s1);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.lname{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lmeta{font-size:13px;color:#606060;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.badge{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;flex-shrink:0;}
+.b-open{background:#1e1e1e;color:#606060;}
+.b-note{background:rgba(46,204,113,.15);color:#2ecc71;}
+.b-hot{background:rgba(231,76,60,.15);color:#e74c3c;}
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:#1e1e1e;border:1px solid #2a2a2a;color:#a0a0a0;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
+.fab2{position:fixed;bottom:24px;right:82px;width:52px;height:52px;border-radius:50%;background:#1e1e1e;border:1px solid #2ecc71;color:#2ecc71;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;}
+/* DETAIL */
+.screen{position:fixed;inset:0;background:#0a0a0a;overflow-y:auto;display:none;scrollbar-width:none;}
+.screen.show{display:block;}
+.hdr{padding:48px 20px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e1e1e;position:sticky;top:0;background:#0a0a0a;z-index:10;}
+.back{width:40px;height:40px;border-radius:8px;background:#1e1e1e;border:none;color:#a0a0a0;font-size:18px;cursor:pointer;}
+.htitle{font-size:17px;font-weight:600;}
+.hsub{font-size:13px;color:#606060;margin-top:2px;}
+.hero{padding:20px;}
+.big-ava{width:60px;height:60px;border-radius:12px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin-bottom:14px;}
+.big-name{font-size:26px;font-weight:700;}
+.firma-txt{font-size:14px;color:#606060;margin-top:4px;}
+.iblock{margin:0 20px 14px;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;}
+.irow{background:#141414;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e1e1e;}
 .irow:last-child{border-bottom:none;}
-.ilbl{font-size:13px;color:var(--text3);}
+.ilbl{font-size:13px;color:#606060;}
 .ival{font-size:14px;font-weight:600;text-align:right;max-width:60%;word-break:break-all;}
-.ival.link{color:var(--blue);font-size:12px;}
-
-.note-section{margin:14px 20px 0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
-.note-lbl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-.note-text{font-size:15px;line-height:1.6;color:var(--text);}
-.note-empty{font-size:14px;color:var(--text3);font-style:italic;}
-
-.actions{padding:16px 20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0;}
-.btn{border:none;border-radius:var(--r);padding:18px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .1s;}
+.blue{color:#4a9eff;}
+.nbox{margin:0 20px 14px;background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:14px;}
+.nlbl{font-size:11px;font-weight:600;color:#606060;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.nval{font-size:15px;line-height:1.6;}
+.nempty{font-size:14px;color:#606060;font-style:italic;}
+.acts{padding:0 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{border:none;border-radius:8px;padding:18px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .btn:active{transform:scale(.97);}
-.bicon{font-size:22px;}
-.btn-call{background:var(--green2);color:#fff;grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px;font-size:16px;padding:20px;border-radius:10px;}
-.btn-call:active{background:#219a52;}
-.btn-gray{background:var(--s2);color:var(--text);border:1px solid var(--border2);}
-.btn-gray:active{background:var(--s3);}
-.btn-next{background:var(--s2);color:var(--text);border:1px solid var(--border2);grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;font-size:15px;padding:18px;border-radius:10px;}
-
-/* NOTE SCREEN */
-#screen-note{background:var(--bg);}
+.bico{font-size:22px;}
+.bcall{background:#27ae60;color:#fff;grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px;font-size:16px;padding:20px;border-radius:10px;}
+.bgray{background:#1e1e1e;color:#f0f0f0;border:1px solid #2a2a2a;}
+.bnext{background:#1e1e1e;color:#f0f0f0;border:1px solid #2a2a2a;grid-column:1/-1;flex-direction:row;justify-content:center;gap:8px;font-size:15px;padding:18px;border-radius:10px;}
+/* NOTE */
+.note-screen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;}
+.note-screen.show{display:flex;}
 .note-body{flex:1;display:flex;flex-direction:column;padding:16px 20px 20px;gap:12px;}
-.note-ta{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:16px;font-size:16px;color:var(--text);resize:none;outline:none;font-family:inherit;line-height:1.7;min-height:160px;}
-.note-ta:focus{border-color:var(--blue);}
-.voice-btn{padding:18px;border-radius:var(--r);background:var(--s2);border:1px solid var(--border2);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .12s;}
-.voice-btn.on{background:rgba(231,76,60,.12);border-color:var(--red);color:var(--red);animation:pulse 1.2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
-.save-btn{padding:18px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;}
-
-/* OFFER SCREEN */
-#screen-offer{background:var(--bg);}
-.offer-scroll{flex:1;overflow-y:auto;padding:8px 20px;scrollbar-width:none;}
-.offer-scroll::-webkit-scrollbar{display:none;}
-.ocard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .1s;}
-.ocard:active{transform:scale(.98);}
-.ocard.sel{border-color:var(--blue);background:rgba(74,158,255,.06);}
-.otitle{font-size:15px;font-weight:700;color:var(--text);}
-.odesc{font-size:13px;color:var(--text3);margin-top:5px;line-height:1.5;}
-.oprice{font-size:22px;font-weight:700;color:var(--blue);margin-top:8px;}
-.otag-row{display:flex;justify-content:space-between;align-items:flex-start;}
-.otag{padding:3px 8px;border-radius:6px;background:var(--s3);font-size:11px;color:var(--text3);font-weight:600;}
-.send-btn{margin:0 20px 20px;padding:18px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;width:calc(100% - 40px);flex-shrink:0;transition:opacity .12s;}
-.send-btn:disabled{opacity:.3;cursor:default;}
-
-/* CALENDAR SCREEN */
-#screen-cal{background:var(--bg);}
-.cal-body{flex:1;display:flex;flex-direction:column;padding:16px 20px 20px;gap:12px;}
-.cal-lbl{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
-.cal-input{width:100%;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;font-size:15px;color:var(--text);outline:none;font-family:inherit;}
-.cal-input:focus{border-color:var(--blue);}
-.cal-presets{display:flex;gap:8px;flex-wrap:wrap;}
-.preset{padding:8px 14px;border-radius:20px;background:var(--s2);border:1px solid var(--border2);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .1s;}
-.preset:active{background:var(--s3);}
-.preset.on{background:var(--blue);color:#fff;border-color:var(--blue);}
-.cal-save{padding:18px;border-radius:var(--r);background:var(--green2);color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;margin-top:auto;}
-
-/* SETTINGS */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s;}
-.modal-bg.open{opacity:1;pointer-events:all;}
-.modal{background:var(--s1);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:22px 20px 40px;width:100%;transform:translateY(100%);transition:transform .25s;}
-.modal-bg.open .modal{transform:translateY(0);}
-.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:18px;}
-.mlbl{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
-.minput{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);padding:13px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:12px;}
-.minput:focus{border-color:var(--blue);}
-.msave{width:100%;padding:16px;border-radius:var(--r);background:var(--blue);color:#fff;font-size:15px;font-weight:600;cursor:pointer;border:none;}
-
+textarea{flex:1;background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px;font-size:16px;color:#f0f0f0;resize:none;outline:none;font-family:inherit;line-height:1.7;min-height:150px;}
+textarea:focus{border-color:#4a9eff;}
+.vbtn{padding:18px;border-radius:8px;background:#1e1e1e;border:1px solid #2a2a2a;color:#f0f0f0;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.vbtn.rec{background:rgba(231,76,60,.12);border-color:#e74c3c;color:#e74c3c;animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.sbtn{padding:18px;border-radius:8px;background:#4a9eff;color:#fff;font-size:16px;font-weight:600;cursor:pointer;border:none;}
 /* TOAST */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;opacity:0;transition:all .22s;z-index:100;white-space:nowrap;pointer-events:none;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:#1e1e1e;border:1px solid #2a2a2a;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;opacity:0;transition:all .22s;z-index:999;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:var(--green);color:var(--green);}
-.toast.err{border-color:var(--red);color:var(--red);}
-.toast.info{border-color:var(--blue);color:var(--blue);}
+.toast.ok{border-color:#2ecc71;color:#2ecc71;}
+.toast.err{border-color:#e74c3c;color:#e74c3c;}
+.toast.info{border-color:#4a9eff;color:#4a9eff;}
 </style>
 </head>
 <body>
 
-<!-- ===== LIST ===== -->
-<div id="screen-list" class="screen">
-  <div class="list-head">
-    <div class="app-label">Field Sales</div>
-    <div class="app-title">RepRunner</div>
-    <div class="app-sub" id="list-sub">17 leadów PL — dzisiaj dzwonimy</div>
+<div id="main">
+  <div class="top">
+    <div class="label">Field Sales</div>
+    <h1>RepRunner</h1>
+    <div class="sub" id="sub">Wczytywanie...</div>
   </div>
-  <div class="prog-section">
-    <div class="prog-track"><div class="prog-bar" id="prog" style="width:0%"></div></div>
-    <div class="prog-text" id="prog-txt"></div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-bar" id="prog"></div></div>
+    <div class="prog-txt" id="progtxt"></div>
   </div>
-  <div class="filter-row">
-    <div class="chip on" onclick="setFilter('all',this)">Wszystkie</div>
-    <div class="chip" onclick="setFilter('open',this)">Open</div>
-    <div class="chip" onclick="setFilter('nonote',this)">Bez notatki</div>
-    <div class="chip" onclick="setFilter('warn',this)">Uwaga</div>
+  <div class="filters">
+    <div class="chip on" onclick="setF('all',this)">Wszystkie</div>
+    <div class="chip" onclick="setF('open',this)">Open</div>
+    <div class="chip" onclick="setF('nonote',this)">Bez notatki</div>
+    <div class="chip" onclick="setF('hot',this)">Pilne</div>
   </div>
-  <div class="lead-list" id="lead-list"></div>
-  <button class="fab" onclick="openCfg()" style="right:20px">⚙️</button>
-  <button class="fab" onclick="exportCSV()" style="right:80px;background:var(--s2);border-color:var(--green);color:var(--green)" title="Eksportuj notatki">📤</button>
+  <div class="list" id="list"></div>
+  <button class="fab2" onclick="exportCSV()">&#128228;</button>
+  <button class="fab" onclick="alert('Webhooki n8n — ustawimy wieczorem!')">&#9881;&#65039;</button>
 </div>
 
-<!-- ===== DETAIL ===== -->
-<div id="screen-detail" class="screen hidden">
+<div class="screen" id="det">
   <div class="hdr">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div class="hdr-info">
-      <div class="hdr-title" id="d-title"></div>
-      <div class="hdr-sub" id="d-sub"></div>
-    </div>
+    <button class="back" onclick="goBack()">&#8592;</button>
+    <div><div class="htitle" id="d-title"></div><div class="hsub" id="d-sub"></div></div>
   </div>
-  <div class="det-scroll">
-    <div class="det-hero">
-      <div class="det-ava" id="d-ava"></div>
-      <div class="det-name" id="d-name"></div>
-      <div class="det-firma" id="d-firma"></div>
-      <div class="det-tags" id="d-tags"></div>
-    </div>
-    <div class="info-grid">
-      <div class="irow"><span class="ilbl">📍 Miasto</span><span class="ival" id="d-miasto"></span></div>
-      <div class="irow"><span class="ilbl">🔧 Co czyścić</span><span class="ival" id="d-objective" style="color:var(--blue)"></span></div>
-      <div class="irow"><span class="ilbl">⏱ Kiedy kupuje</span><span class="ival" id="d-timeframe"></span></div>
-      <div class="irow"><span class="ilbl">📧 Email</span><span class="ival link" id="d-email"></span></div>
-      <div class="irow"><span class="ilbl">📋 Oferta</span><span class="ival" id="d-oferta"></span></div>
-    </div>
-    <div class="note-section">
-      <div class="note-lbl">Notatka</div>
-      <div id="d-note"></div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-call" onclick="callLead()">
-        <span class="bicon">📞</span><span id="call-num">Zadzwoń</span>
-      </button>
-      <button class="btn btn-gray" onclick="openNote()">
-        <span class="bicon">🎙️</span><span>Notatka</span>
-      </button>
-      <button class="btn btn-gray" onclick="openOffer()">
-        <span class="bicon">📩</span><span>Oferta</span>
-      </button>
-      <button class="btn btn-gray" onclick="openCal()">
-        <span class="bicon">📅</span><span>Przypomnij</span>
-      </button>
-      <button class="btn btn-next" onclick="nextLead()">
-        <span>Następny lead →</span>
-      </button>
-    </div>
+  <div class="hero">
+    <div class="big-ava" id="d-ava"></div>
+    <div class="big-name" id="d-name"></div>
+    <div class="firma-txt" id="d-firma"></div>
+  </div>
+  <div class="iblock">
+    <div class="irow"><span class="ilbl">&#128205; Miasto</span><span class="ival" id="d-miasto"></span></div>
+    <div class="irow"><span class="ilbl">&#128295; Co czyścić</span><span class="ival blue" id="d-obj"></span></div>
+    <div class="irow"><span class="ilbl">&#8987; Kiedy kupuje</span><span class="ival" id="d-time"></span></div>
+    <div class="irow"><span class="ilbl">&#128231; Email</span><span class="ival blue" style="font-size:12px" id="d-email"></span></div>
+    <div class="irow"><span class="ilbl">&#128232; Oferta</span><span class="ival" id="d-oferta"></span></div>
+  </div>
+  <div class="nbox">
+    <div class="nlbl">Notatka</div>
+    <div id="d-note"><span class="nempty">Brak notatki</span></div>
+  </div>
+  <div class="acts">
+    <button class="btn bcall" onclick="doCall()">
+      <span class="bico">&#128222;</span><span id="d-phone">Zadzwon</span>
+    </button>
+    <button class="btn bgray" onclick="openNote()">
+      <span class="bico">&#127897;&#65039;</span><span>Notatka</span>
+    </button>
+    <button class="btn bgray" onclick="doReminder()">
+      <span class="bico">&#128197;</span><span>Przypomnij</span>
+    </button>
+    <button class="btn bgray" onclick="toast('Oferta — skonfiguruj webhook','err')">
+      <span class="bico">&#128233;</span><span>Oferta</span>
+    </button>
+    <button class="btn bnext" onclick="nextLead()">
+      <span>Nastepny lead &#8594;</span>
+    </button>
   </div>
 </div>
 
-<!-- ===== NOTE ===== -->
-<div id="screen-note" class="screen hidden">
+<div class="note-screen" id="noteScr">
   <div class="hdr">
-    <button class="back-btn" onclick="closeNote()">←</button>
-    <div class="hdr-info">
-      <div class="hdr-title">Notatka głosowa</div>
-      <div class="hdr-sub" id="note-for"></div>
-    </div>
+    <button class="back" onclick="closeNote()">&#8592;</button>
+    <div><div class="htitle">Notatka glosowa</div><div class="hsub" id="note-for"></div></div>
   </div>
   <div class="note-body">
-    <textarea class="note-ta" id="note-ta" placeholder="Wpisz lub naciśnij mikrofon i mów..."></textarea>
-    <button class="voice-btn" id="vbtn" onclick="toggleVoice()">
-      <span id="vicon">🎙️</span><span id="vlbl">Naciśnij i mów</span>
+    <textarea id="ta" placeholder="Wpisz lub nacisnij mikrofon i mow..."></textarea>
+    <button class="vbtn" id="vbtn" onclick="toggleVoice()">
+      <span id="vico">&#127897;&#65039;</span><span id="vlbl">Nacisnij i mow</span>
     </button>
-    <button class="save-btn" onclick="saveNote()">💾 Zapisz notatkę</button>
-  </div>
-</div>
-
-<!-- ===== OFFER ===== -->
-<div id="screen-offer" class="screen hidden">
-  <div class="hdr">
-    <button class="back-btn" onclick="closeOffer()">←</button>
-    <div class="hdr-info">
-      <div class="hdr-title">Wybierz ofertę</div>
-      <div class="hdr-sub" id="offer-for"></div>
-    </div>
-  </div>
-  <div class="offer-scroll" id="offer-list"></div>
-  <button class="send-btn" id="send-btn" onclick="sendOffer()" disabled>📩 Wyślij ofertę</button>
-</div>
-
-<!-- ===== CALENDAR ===== -->
-<div id="screen-cal" class="screen hidden">
-  <div class="hdr">
-    <button class="back-btn" onclick="closeCal()">←</button>
-    <div class="hdr-info">
-      <div class="hdr-title">Ustaw przypomnienie</div>
-      <div class="hdr-sub" id="cal-for"></div>
-    </div>
-  </div>
-  <div class="cal-body">
-    <div>
-      <div class="cal-lbl">Szybki wybór</div>
-      <div class="cal-presets">
-        <div class="preset" onclick="setPreset(this,'jutro 9:00')">Jutro 9:00</div>
-        <div class="preset" onclick="setPreset(this,'jutro 12:00')">Jutro 12:00</div>
-        <div class="preset" onclick="setPreset(this,'jutro 15:00')">Jutro 15:00</div>
-        <div class="preset" onclick="setPreset(this,'za 2 dni 10:00')">Za 2 dni</div>
-        <div class="preset" onclick="setPreset(this,'za tydzień')">Za tydzień</div>
-      </div>
-    </div>
-    <div>
-      <div class="cal-lbl">Data i godzina</div>
-      <input class="cal-input" type="datetime-local" id="cal-dt">
-    </div>
-    <div>
-      <div class="cal-lbl">Notatka do przypomnienia</div>
-      <input class="cal-input" id="cal-note" placeholder="np. omówić cenę, wysłać fakturę...">
-    </div>
-    <button class="cal-save" onclick="saveCal()">📅 Dodaj do Google Calendar</button>
-  </div>
-</div>
-
-<!-- ===== SETTINGS ===== -->
-<div class="modal-bg" id="cfg-modal" onclick="closeCfgModal(event)">
-  <div class="modal">
-    <div class="modal-title">⚙️ Ustawienia n8n</div>
-    <div class="mlbl">Webhook — notatka</div>
-    <input class="minput" id="c-note" type="url" placeholder="https://n8n.../webhook/note">
-    <div class="mlbl">Webhook — oferta</div>
-    <input class="minput" id="c-offer" type="url" placeholder="https://n8n.../webhook/offer">
-    <div class="mlbl">Twój email (nadawca)</div>
-    <input class="minput" id="c-email" type="email" placeholder="krystian@vertextrading.eu">
-    <button class="msave" onclick="saveCfg()">Zapisz</button>
+    <button class="sbtn" onclick="saveNote()">&#128190; Zapisz notatke</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const LEADS = [{"idx":1,"imie":"Wojciech Idzik","phone":"+48691305541","email":"idzikw@gmail.com","miasto":"Ropczyce","firma":"","objective":"elementy drewniane","timeframe":"za 3-6 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":2,"imie":"Tomasz Buśkiewicz","phone":"+48519138140","email":"tb@powerspartner.pl","miasto":"","firma":"Powers Partner Sp z o.o.","objective":"rdza i korozja","timeframe":"jak najszybciej","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":3,"imie":"TomiK","phone":"+48790440260","email":"okimotomiko@gmail.com","miasto":"Lubliniec","firma":"","objective":"elementy drewniane","timeframe":"w ciągu 1-3 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":4,"imie":"Roland Psik","phone":"+48511620629","email":"arni334@interia.eu","miasto":"Opole","firma":"swt","objective":"rdza i korozja","timeframe":"jak najszybciej","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":5,"imie":"Emil Banaszek","phone":"+48885159537","email":"banan2707@wp.pl","miasto":"Krotoszyn","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":6,"imie":"Jakub Przytulski","phone":"+48500644993","email":"przytulskijakub@gmail.com","miasto":"Bieruń","firma":"JPTruckSerwis","objective":"farba i lakier","timeframe":"w ciągu 1-3 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":7,"imie":"Hema-Sawo","phone":"+48579000121","email":"hw1000@wp.pl","miasto":"Chojnice","firma":"Hema-Sawo","objective":"rdza i korozja","timeframe":"za 3-6 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":8,"imie":"Paweł","phone":"+48518227214","email":"andrzejsiemieniak189@gmail.com","miasto":"Jabłonna","firma":"","objective":"rdza i korozja","timeframe":"w ciągu 1-3 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":9,"imie":"Wojciech Prokopowicz","phone":"+48722275895","email":"288gto1@gmail.com","miasto":"Dytmarów","firma":"","objective":"rdza i korozja","timeframe":"w ciągu 1-3 miesięcy","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":10,"imie":"Marek Miklis","phone":"+48736792550","email":"marek.miklis.0@gmail.com","miasto":"Ozorków","firma":"","objective":"rdza i korozja","timeframe":"tylko sprawdzam opcje","status":"Open","notatka":"","oferta_status":"mail 10/05"},{"idx":11,"imie":"Marek Karpiel","phone":"+48532378404","email":"marek.karp66@gmail.com","miasto":"Sławków","firma":"","objective":"rdza i korozja","timeframe":"za 3-6 miesięcy","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":12,"imie":"Piotr Szopen","phone":"+48660544199","email":"pozog@o2.pl","miasto":"Sokołów Małopolski","firma":"","objective":"elementy drewniane","timeframe":"tylko sprawdzam opcje","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":13,"imie":"Mariusz Jakubiec","phone":"+48727723401","email":"majakubiec@wp.pl","miasto":"Bielsko-Biała","firma":"","objective":"farba i lakier","timeframe":"za 3-6 miesięcy","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":14,"imie":"Janko","phone":"+48533377308","email":"imlesjan@gmail.com","miasto":"Skarżysko Kamienna","firma":"Kreatywne Rozwiązania","objective":"elementy drewniane","timeframe":"w ciągu 1-3 miesięcy","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":15,"imie":"Piotr Popowicz","phone":"+48786695276","email":"piotrpopowicz077@gmail.com","miasto":"Kłodzko","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":16,"imie":"Karol","phone":"+48666666666","email":"karol.wabnic@o2.pl","miasto":"Bralin","firma":"","objective":"farba i lakier","timeframe":"tylko sprawdzam opcje","status":"Open","notatka":"","oferta_status":"mail 11/05"},{"idx":17,"imie":"Marcin Kowalczyk","phone":"+48603433982","email":"marcin@amkdecor.pl","miasto":"Oleśnica","firma":"AMKdecor","objective":"elementy drewniane","timeframe":"jak najszybciej","status":"Open","notatka":"","oferta_status":"mail 11/05"}];
-
-const OFFERS = [
-  {id:"uc-cw2",title:"Laser Ciągły UC-CW2 2000W",desc:"Chłodzenie wodne · stal ciężka · spawalnictwo przemysłowe",price:"31 000 PLN",tag:"Top"},
-  {id:"cp-a3",title:"Laser Pulsacyjny CP-A3 300W",desc:"Chłodzenie powietrzem · mobilny · warsztaty",price:"29 000 PLN",tag:"Mobilny"},
-  {id:"cp-b3",title:"Laser Pulsacyjny CP-B3 300W",desc:"Briefcase · ultra mobilny · wyjazdy serwisowe",price:"28 000 PLN",tag:"Walizka"},
-  {id:"4w1",title:"Spawarka 4w1 AI",desc:"Laser + MIG + TIG + elektroda · pełny zestaw",price:"na zapytanie",tag:"Combo"},
+var LEADS = [
+{"idx":1,"imie":"Wojciech Idzik","phone":"+48691305541","email":"idzikw@gmail.com","miasto":"Ropczyce","firma":"","objective":"elementy drewniane","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":2,"imie":"Tomasz Buskiewicz","phone":"+48519138140","email":"tb@powerspartner.pl","miasto":"","firma":"Powers Partner Sp z o.o.","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 10/05"},
+{"idx":3,"imie":"TomiK","phone":"+48790440260","email":"okimotomiko@gmail.com","miasto":"Lubliniec","firma":"","objective":"elementy drewniane","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":4,"imie":"Roland Psik","phone":"+48511620629","email":"arni334@interia.eu","miasto":"Opole","firma":"swt","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 10/05"},
+{"idx":5,"imie":"Emil Banaszek","phone":"+48885159537","email":"banan2707@wp.pl","miasto":"Krotoszyn","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 10/05"},
+{"idx":6,"imie":"Jakub Przytulski","phone":"+48500644993","email":"przytulskijakub@gmail.com","miasto":"Bierun","firma":"JPTruckSerwis","objective":"farba i lakier","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":7,"imie":"Hema-Sawo","phone":"+48579000121","email":"hw1000@wp.pl","miasto":"Chojnice","firma":"Hema-Sawo","objective":"rdza i korozja","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":8,"imie":"Pawel","phone":"+48518227214","email":"andrzejsiemieniak189@gmail.com","miasto":"Jablonna","firma":"","objective":"rdza i korozja","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":9,"imie":"Wojciech Prokopowicz","phone":"+48722275895","email":"288gto1@gmail.com","miasto":"Dytmarow","firma":"","objective":"rdza i korozja","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 10/05"},
+{"idx":10,"imie":"Marek Miklis","phone":"+48736792550","email":"marek.miklis.0@gmail.com","miasto":"Ozorkow","firma":"","objective":"rdza i korozja","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 10/05"},
+{"idx":11,"imie":"Marek Karpiel","phone":"+48532378404","email":"marek.karp66@gmail.com","miasto":"Slawkow","firma":"","objective":"rdza i korozja","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 11/05"},
+{"idx":12,"imie":"Piotr Szopen","phone":"+48660544199","email":"pozog@o2.pl","miasto":"Sokolow Malopolski","firma":"","objective":"elementy drewniane","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 11/05"},
+{"idx":13,"imie":"Mariusz Jakubiec","phone":"+48727723401","email":"majakubiec@wp.pl","miasto":"Bielsko-Biala","firma":"","objective":"farba i lakier","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 11/05"},
+{"idx":14,"imie":"Janko","phone":"+48533377308","email":"imlesjan@gmail.com","miasto":"Skarzys.Kamienna","firma":"Kreatywne Rozw.","objective":"elementy drewniane","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 11/05"},
+{"idx":15,"imie":"Piotr Popowicz","phone":"+48786695276","email":"piotrpopowicz077@gmail.com","miasto":"Klodzko","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 11/05"},
+{"idx":16,"imie":"Karol","phone":"+48666666666","email":"karol.wabnic@o2.pl","miasto":"Bralin","firma":"","objective":"farba i lakier","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 11/05"},
+{"idx":17,"imie":"Marcin Kowalczyk","phone":"+48603433982","email":"marcin@amkdecor.pl","miasto":"Olesnica","firma":"AMKdecor","objective":"elementy drewniane","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 11/05"}
 ];
 
-const WARN = ['nie odbiera','error','za drogo','brak'];
-let leads = LEADS.map(l=>({...l}));
-let curIdx = 0, curFilter = 'all', selOffer = null;
-let rec = null, isRec = false;
-let cfg = {nw:'',ow:'',em:''};
+var leads = LEADS.map(function(l){ return Object.assign({}, l); });
+var curIdx = 0;
+var curFilter = "all";
+var rec = null;
+var isRec = false;
 
-try{const s=localStorage.getItem('rr_cfg');if(s)cfg={...cfg,...JSON.parse(s)};}catch(e){}
-
-function loadNotes(){
-  try{
-    const s=localStorage.getItem('rr_notes');
-    if(!s)return;
-    const n=JSON.parse(s);
-    leads.forEach(l=>{if(n[l.idx]!==undefined)l.notatka=n[l.idx];});
-  }catch(e){
-    localStorage.removeItem('rr_notes'); // clear corrupted cache
-  }
+function loadNotes() {
+  try {
+    var s = localStorage.getItem("rr2_notes");
+    if (!s) return;
+    var n = JSON.parse(s);
+    leads.forEach(function(l) { if (n[l.idx]) l.notatka = n[l.idx]; });
+  } catch(e) { localStorage.removeItem("rr2_notes"); }
 }
-function persistNote(idx,text){
-  try{const s=localStorage.getItem('rr_notes');const n=s?JSON.parse(s):{};n[idx]=text;localStorage.setItem('rr_notes',JSON.stringify(n));}catch(e){}
+function saveNoteLocal(idx, text) {
+  try {
+    var s = localStorage.getItem("rr2_notes");
+    var n = s ? JSON.parse(s) : {};
+    n[idx] = text;
+    localStorage.setItem("rr2_notes", JSON.stringify(n));
+  } catch(e) {}
 }
 loadNotes();
 
-function isWarn(l){return WARN.some(w=>l.status.toLowerCase().includes(w));}
+function isHot(l) { return l.timeframe && (l.timeframe.indexOf("najszybciej") >= 0 || l.timeframe.indexOf("1-3") >= 0); }
 
-function filtered(){
-  if(curFilter==='open') return leads.filter(l=>l.status==='Open');
-  if(curFilter==='nonote') return leads.filter(l=>!l.notatka);
-  if(curFilter==='warn') return leads.filter(l=>isWarn(l));
+function filtered() {
+  if (curFilter === "open") return leads.filter(function(l){ return true; });
+  if (curFilter === "nonote") return leads.filter(function(l){ return !l.notatka; });
+  if (curFilter === "hot") return leads.filter(function(l){ return isHot(l); });
   return leads;
 }
 
-function setFilter(f,el){
-  curFilter=f;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
+function setF(f, el) {
+  curFilter = f;
+  document.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("on"); });
+  el.classList.add("on");
   renderList();
 }
 
-function getBadge(l){
-  if(l.notatka) return {cls:'b-note',txt:'✓ Notatka'};
-  if(isWarn(l)) return {cls:'b-warn',txt:'Uwaga'};
-  if(l.oferta_status&&l.oferta_status.toLowerCase().includes('sent')) return {cls:'b-offer',txt:'Oferta'};
-  return {cls:'b-open',txt:'Open'};
-}
-
-function renderList(){
-  try{
-  const fl=filtered();
-  const done=leads.filter(l=>l.notatka).length;
-  document.getElementById('list-sub').textContent=`${fl.length} leadów · ${done} z notatką`;
-  document.getElementById('prog').style.width=Math.round(done/leads.length*100)+'%';
-  document.getElementById('prog-txt').textContent=`${done} / ${leads.length} obrobionych`;
-  document.getElementById('lead-list').innerHTML=fl.map(l=>{
-    const b=getBadge(l);
-    const warn=isWarn(l);
-    const meta=[l.firma,l.miasto].filter(Boolean).join(' · ')||l.status||'—';
-    return `<div class="lcard ${l.notatka?'has-note':''} ${warn?'has-warn':''}" onclick="openLead(${leads.indexOf(l)})">
-      <div class="ava">${l.imie[0].toUpperCase()}</div>
-      <div class="linfo">
-        <div class="lname">${l.imie}${l.firma?' — '+l.firma:''}</div>
-        <div class="lmeta">${meta}</div>
-      </div>
-      <div class="badge ${b.cls}">${b.txt}</div>
-    </div>`;
-  }).join('');
-  }catch(err){document.getElementById('lead-list').innerHTML='<div style="padding:20px;color:#e74c3c">Błąd: '+err.message+'</div>';}
-}
-
-function openLead(i){curIdx=i;showDetail();}
-
-function showDetail(){
-  const l=leads[curIdx];
-  const fl=filtered();
-  const pos=fl.indexOf(l);
-  document.getElementById('d-title').textContent=l.imie+' · #'+l.idx;
-  document.getElementById('d-sub').textContent=`Lead ${pos+1} z ${fl.length}`;
-  document.getElementById('d-ava').textContent=l.imie[0].toUpperCase();
-  document.getElementById('d-name').textContent=l.imie;
-  document.getElementById('d-firma').textContent=l.firma||'—';
-  document.getElementById('d-miasto').textContent=l.miasto||'—';
-  document.getElementById('d-objective').textContent=l.objective||'—';
-  document.getElementById('d-timeframe').textContent=l.timeframe||'—';
-  document.getElementById('d-email').textContent=l.email||'—';
-  document.getElementById('d-oferta').textContent=l.oferta_status||'—';
-  document.getElementById('d-note').innerHTML=l.notatka
-    ?`<div class="note-text">${l.notatka}</div>`
-    :`<div class="note-empty">Brak notatki — nagraj po rozmowie</div>`;
-  document.getElementById('call-num').textContent=l.phone;
-  const tags=[l.status].filter(Boolean);
-  document.getElementById('d-tags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
-  showScreen('screen-detail','screen-list');
-}
-
-function callLead(){window.location.href='tel:'+leads[curIdx].phone.replace(/\s/g,'');}
-
-function nextLead(){
-  const fl=filtered();
-  const pos=fl.indexOf(leads[curIdx]);
-  if(pos<fl.length-1){curIdx=leads.indexOf(fl[pos+1]);showDetail();}
-  else toast('✅ Koniec listy!','ok');
-}
-
-function goBack(){showScreen('screen-list','screen-detail',true);renderList();}
-
-// NOTE
-function openNote(){
-  const l=leads[curIdx];
-  document.getElementById('note-for').textContent=l.imie+(l.firma?' · '+l.firma:'');
-  document.getElementById('note-ta').value=l.notatka||'';
-  showScreen('screen-note','screen-detail');
-}
-function closeNote(){stopVoice();showScreen('screen-detail','screen-note',true);}
-
-function toggleVoice(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
-    toast('Brak API mowy — wpisz ręcznie','err');return;
+function renderList() {
+  var fl = filtered();
+  var done = leads.filter(function(l){ return l.notatka; }).length;
+  document.getElementById("sub").textContent = fl.length + " leadow - " + done + " z notatka";
+  document.getElementById("prog").style.width = Math.round(done / leads.length * 100) + "%";
+  document.getElementById("progtxt").textContent = done + " / " + leads.length + " obrobionych";
+  var html = "";
+  for (var i = 0; i < fl.length; i++) {
+    var l = fl[i];
+    var ri = leads.indexOf(l);
+    var hot = isHot(l);
+    var bc = l.notatka ? "b-note" : hot ? "b-hot" : "b-open";
+    var bt = l.notatka ? "Notatka" : hot ? "Pilne" : "Open";
+    var cls = "card" + (l.notatka ? " has-note" : "") + (hot && !l.notatka ? " is-hot" : "");
+    var meta = [l.firma, l.miasto].filter(function(x){ return x; }).join(" - ") || l.timeframe || "-";
+    html += "<div class='" + cls + "' onclick='openLead(" + ri + ")'>";
+    html += "<div class='ava'>" + l.imie[0].toUpperCase() + "</div>";
+    html += "<div class='linfo'><div class='lname'>" + l.imie + (l.firma ? " - " + l.firma : "") + "</div>";
+    html += "<div class='lmeta'>" + meta + "</div></div>";
+    html += "<div class='badge " + bc + "'>" + bt + "</div></div>";
   }
-  isRec?stopVoice():startVoice();
+  document.getElementById("list").innerHTML = html;
 }
 
-function startVoice(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  rec=new SR();rec.lang='pl-PL';rec.continuous=true;rec.interimResults=true;
-  const baseline=document.getElementById('note-ta').value.trim();
-  let final=baseline;
-  rec.onresult=e=>{
-    let interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      const t=e.results[i][0].transcript.trim();
-      if(e.results[i].isFinal) final+=(final?' ':'')+t;
-      else interim=t;
+function openLead(i) { curIdx = i; showDet(); }
+
+function showDet() {
+  var l = leads[curIdx];
+  var fl = filtered();
+  var pos = fl.indexOf(l);
+  document.getElementById("d-title").textContent = l.imie + " #" + l.idx;
+  document.getElementById("d-sub").textContent = "Lead " + (pos + 1) + " z " + fl.length;
+  document.getElementById("d-ava").textContent = l.imie[0].toUpperCase();
+  document.getElementById("d-name").textContent = l.imie;
+  document.getElementById("d-firma").textContent = l.firma || "";
+  document.getElementById("d-miasto").textContent = l.miasto || "-";
+  document.getElementById("d-obj").textContent = l.objective || "-";
+  document.getElementById("d-time").textContent = l.timeframe || "-";
+  document.getElementById("d-email").textContent = l.email || "-";
+  document.getElementById("d-oferta").textContent = l.oferta_status || "-";
+  document.getElementById("d-phone").textContent = l.phone;
+  var noteEl = document.getElementById("d-note");
+  if (l.notatka) {
+    noteEl.innerHTML = "<span class='nval'>" + l.notatka + "</span>";
+  } else {
+    noteEl.innerHTML = "<span class='nempty'>Brak notatki - nagraj po rozmowie</span>";
+  }
+  document.getElementById("det").classList.add("show");
+}
+
+function goBack() { document.getElementById("det").classList.remove("show"); renderList(); }
+function doCall() { window.location.href = "tel:" + leads[curIdx].phone.replace(/\s/g, ""); }
+
+function nextLead() {
+  var fl = filtered();
+  var pos = fl.indexOf(leads[curIdx]);
+  if (pos < fl.length - 1) { curIdx = leads.indexOf(fl[pos + 1]); showDet(); }
+  else { toast("Koniec listy!", "ok"); }
+}
+
+function openNote() {
+  var l = leads[curIdx];
+  document.getElementById("note-for").textContent = l.imie + (l.firma ? " - " + l.firma : "");
+  document.getElementById("ta").value = l.notatka || "";
+  document.getElementById("noteScr").classList.add("show");
+}
+function closeNote() { stopVoice(); document.getElementById("noteScr").classList.remove("show"); }
+
+function toggleVoice() {
+  if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+    toast("Brak API mowy - wpisz recznie", "err"); return;
+  }
+  if (isRec) { stopVoice(); } else { startVoice(); }
+}
+
+function startVoice() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  rec = new SR();
+  rec.lang = "pl-PL";
+  rec.continuous = true;
+  rec.interimResults = true;
+  var base = document.getElementById("ta").value.trim();
+  var fin = base;
+  rec.onresult = function(e) {
+    var interim = "";
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      var t = e.results[i][0].transcript.trim();
+      if (e.results[i].isFinal) { fin += (fin ? " " : "") + t; }
+      else { interim = t; }
     }
-    document.getElementById('note-ta').value=final+(interim?'\n[…] '+interim:'');
+    document.getElementById("ta").value = fin + (interim ? " ... " + interim : "");
   };
-  rec.onend=()=>{
-    const ta=document.getElementById('note-ta');
-    ta.value=ta.value.replace(/\n\[…\].*$/,'');
-    isRec=false;updateVUI();
+  rec.onend = function() {
+    var ta = document.getElementById("ta");
+    ta.value = ta.value.replace(/\s*\.\.\..*/g, "");
+    isRec = false; updateVUI();
   };
-  rec.onerror=()=>{isRec=false;updateVUI();};
-  rec.start();isRec=true;updateVUI();
-}
-function stopVoice(){if(rec)rec.stop();isRec=false;updateVUI();}
-function updateVUI(){
-  document.getElementById('vicon').textContent=isRec?'⏹️':'🎙️';
-  document.getElementById('vlbl').textContent=isRec?'Nagrywam — naciśnij by zatrzymać':'Naciśnij i mów';
-  document.getElementById('vbtn').classList.toggle('on',isRec);
+  rec.onerror = function() { isRec = false; updateVUI(); };
+  rec.start();
+  isRec = true; updateVUI();
 }
 
-async function saveNote(){
+function stopVoice() { if (rec) rec.stop(); isRec = false; updateVUI(); }
+
+function updateVUI() {
+  document.getElementById("vico").textContent = isRec ? "Stop" : "Mikrofon";
+  document.getElementById("vlbl").textContent = isRec ? "Nagrywam - nacisnij by zatrzymac" : "Nacisnij i mow";
+  document.getElementById("vbtn").classList.toggle("rec", isRec);
+}
+
+function saveNote() {
   stopVoice();
-  const text=document.getElementById('note-ta').value.replace(/\n\[…\].*$/,'').trim();
-  if(!text){toast('Notatka jest pusta','err');return;}
-  const l=leads[curIdx];
-  l.notatka=text;persistNote(l.idx,text);
-  if(cfg.nw){
-    try{
-      await fetch(cfg.nw,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,phone:l.phone,email:l.email,notatka:text,ts:new Date().toISOString()})});
-      toast('✅ Notatka → Google Sheet','ok');
-    }catch(e){toast('✅ Zapisano lokalnie','ok');}
-  }else{toast('✅ Zapisano lokalnie','ok');}
-  closeNote();showDetail();
+  var text = document.getElementById("ta").value.replace(/\s*\.\.\..*/g, "").trim();
+  if (!text) { toast("Notatka pusta", "err"); return; }
+  leads[curIdx].notatka = text;
+  saveNoteLocal(leads[curIdx].idx, text);
+  toast("Zapisano!", "ok");
+  closeNote();
+  showDet();
 }
 
-// OFFER
-function openOffer(){
-  const l=leads[curIdx];
-  document.getElementById('offer-for').textContent='→ '+l.imie+' · '+l.email;
-  selOffer=null;
-  document.getElementById('send-btn').disabled=true;
-  document.getElementById('offer-list').innerHTML=OFFERS.map(o=>
-    `<div class="ocard" id="oc-${o.id}" onclick="pickOffer('${o.id}')">
-      <div class="otag-row"><div class="otitle">${o.title}</div><span class="otag">${o.tag}</span></div>
-      <div class="odesc">${o.desc}</div>
-      <div class="oprice">${o.price} netto</div>
-    </div>`
-  ).join('');
-  showScreen('screen-offer','screen-detail');
-}
-function pickOffer(id){
-  selOffer=OFFERS.find(o=>o.id===id);
-  document.querySelectorAll('.ocard').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('oc-'+id).classList.add('sel');
-  document.getElementById('send-btn').disabled=false;
-}
-function closeOffer(){showScreen('screen-detail','screen-offer',true);}
-async function sendOffer(){
-  if(!selOffer)return;
-  const l=leads[curIdx];
-  if(cfg.ow){
-    try{
-      await fetch(cfg.ow,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({idx:l.idx,imie:l.imie,firma:l.firma,email:l.email,
-          offer_id:selOffer.id,offer_title:selOffer.title,sender:cfg.em,ts:new Date().toISOString()})});
-      l.oferta_status='sent '+new Date().toLocaleDateString('pl');
-      toast('📩 Oferta wysłana!','ok');
-    }catch(e){toast('Brak połączenia n8n','err');}
-  }else{toast('Skonfiguruj webhook oferty','err');}
-  closeOffer();showDetail();
+function doReminder() {
+  var l = leads[curIdx];
+  var d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(9, 0, 0, 0);
+  var end = new Date(d.getTime() + 30 * 60000);
+  function fmt(dt) { return dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z"; }
+  var title = encodeURIComponent("Oddzwon: " + l.imie + (l.firma ? " - " + l.firma : ""));
+  var det = encodeURIComponent("Tel: " + l.phone + "\nEmail: " + l.email);
+  window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + fmt(d) + "/" + fmt(end) + "&details=" + det, "_blank");
+  toast("Otwieram Kalendarz", "info");
 }
 
-// CALENDAR - Google Calendar deep link
-function openCal(){
-  const l=leads[curIdx];
-  document.getElementById('cal-for').textContent=l.imie+(l.firma?' · '+l.firma:'');
-  document.getElementById('cal-note').value='Oddzwoń: '+l.imie+(l.firma?' ('+l.firma+')':'')+' · '+l.phone;
-  // Set default to tomorrow 9am
-  const d=new Date();d.setDate(d.getDate()+1);d.setHours(9,0,0,0);
-  document.getElementById('cal-dt').value=d.toISOString().slice(0,16);
-  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));
-  showScreen('screen-cal','screen-detail');
-}
-function closeCal(){showScreen('screen-detail','screen-cal',true);}
-
-function setPreset(el,txt){
-  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));
-  el.classList.add('on');
-  const now=new Date();
-  if(txt.includes('jutro 9')) {now.setDate(now.getDate()+1);now.setHours(9,0,0,0);}
-  else if(txt.includes('jutro 12')) {now.setDate(now.getDate()+1);now.setHours(12,0,0,0);}
-  else if(txt.includes('jutro 15')) {now.setDate(now.getDate()+1);now.setHours(15,0,0,0);}
-  else if(txt.includes('2 dni')) {now.setDate(now.getDate()+2);now.setHours(10,0,0,0);}
-  else if(txt.includes('tydzień')) {now.setDate(now.getDate()+7);now.setHours(9,0,0,0);}
-  document.getElementById('cal-dt').value=now.toISOString().slice(0,16);
-}
-
-function saveCal(){
-  const l=leads[curIdx];
-  const dtVal=document.getElementById('cal-dt').value;
-  const note=document.getElementById('cal-note').value;
-  if(!dtVal){toast('Wybierz datę','err');return;}
-
-  // Build Google Calendar URL
-  const start=new Date(dtVal);
-  const end=new Date(start.getTime()+30*60000); // +30min
-  const fmt=d=>d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-  const title=encodeURIComponent('📞 Oddzwoń: '+l.imie+(l.firma?' — '+l.firma:''));
-  const details=encodeURIComponent(note+'\n\nTel: '+l.phone+'\nEmail: '+l.email);
-  const gcalUrl=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(start)}/${fmt(end)}&details=${details}`;
-
-  window.open(gcalUrl,'_blank');
-  toast('📅 Otwieram Google Calendar','info');
-  closeCal();
-}
-
-// SCREENS
-function showScreen(showId,hideId,back){
-  const s=document.getElementById(showId);
-  const h=document.getElementById(hideId);
-  if(back){h.classList.add('hidden');s.classList.remove('hidden','slide-left');}
-  else{h.classList.add('slide-left');s.classList.remove('hidden');}
-}
-
-// CONFIG
-function openCfg(){
-  document.getElementById('c-note').value=cfg.nw;
-  document.getElementById('c-offer').value=cfg.ow;
-  document.getElementById('c-email').value=cfg.em;
-  document.getElementById('cfg-modal').classList.add('open');
-}
-function closeCfgModal(e){if(e.target===document.getElementById('cfg-modal'))document.getElementById('cfg-modal').classList.remove('open');}
-function saveCfg(){
-  cfg={nw:document.getElementById('c-note').value.trim(),
-       ow:document.getElementById('c-offer').value.trim(),
-       em:document.getElementById('c-email').value.trim()};
-  try{localStorage.setItem('rr_cfg',JSON.stringify(cfg));}catch(e){}
-  document.getElementById('cfg-modal').classList.remove('open');
-  toast('✅ Zapisano','ok');
-}
-
-// TOAST
-let tt;
-function toast(msg,type){
-  clearTimeout(tt);
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast show '+(type||'');
-  tt=setTimeout(()=>t.classList.remove('show'),2800);
-}
-
-// EXPORT
 function exportCSV() {
-  const csv = [
-    ['Imię','Firma','Telefon','Email','Miasto','Co czyścić','Kiedy','Status','Notatka'],
-    ...leads.map(l => [l.imie,l.firma,l.phone,l.email,l.miasto,l.objective||'',l.timeframe||'',l.status,l.notatka||''])
-  ].map(r => r.map(v => '"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
+  var rows = [["Imie","Firma","Telefon","Email","Miasto","Co czyscic","Kiedy","Notatka"]];
+  leads.forEach(function(l) {
+    rows.push([l.imie, l.firma||"", l.phone, l.email, l.miasto||"", l.objective||"", l.timeframe||"", l.notatka||""]);
+  });
+  var csv = rows.map(function(r) {
+    return r.map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
+  }).join("\n");
+  var blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
+  var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = 'reprunner-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download = "reprunner-" + new Date().toISOString().slice(0, 10) + ".csv";
   a.click();
-  toast('📤 CSV pobrany — '+leads.length+' leadów','ok');
+  toast("CSV pobrany", "ok");
+}
+
+var toastT;
+function toast(msg, type) {
+  clearTimeout(toastT);
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + (type || "");
+  toastT = setTimeout(function() { t.classList.remove("show"); }, 2800);
 }
 
 renderList();
+</script>
 </body>
 </html>
