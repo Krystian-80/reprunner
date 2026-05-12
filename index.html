@@ -335,7 +335,14 @@ let cfg = {nw:'',ow:'',em:''};
 try{const s=localStorage.getItem('rr_cfg');if(s)cfg={...cfg,...JSON.parse(s)};}catch(e){}
 
 function loadNotes(){
-  try{const s=localStorage.getItem('rr_notes');if(!s)return;const n=JSON.parse(s);leads.forEach(l=>{if(n[l.idx]!==undefined)l.notatka=n[l.idx];});}catch(e){}
+  try{
+    const s=localStorage.getItem('rr_notes');
+    if(!s)return;
+    const n=JSON.parse(s);
+    leads.forEach(l=>{if(n[l.idx]!==undefined)l.notatka=n[l.idx];});
+  }catch(e){
+    localStorage.removeItem('rr_notes'); // clear corrupted cache
+  }
 }
 function persistNote(idx,text){
   try{const s=localStorage.getItem('rr_notes');const n=s?JSON.parse(s):{};n[idx]=text;localStorage.setItem('rr_notes',JSON.stringify(n));}catch(e){}
@@ -366,6 +373,7 @@ function getBadge(l){
 }
 
 function renderList(){
+  try{
   const fl=filtered();
   const done=leads.filter(l=>l.notatka).length;
   document.getElementById('list-sub').textContent=`${fl.length} leadów · ${done} z notatką`;
@@ -384,6 +392,7 @@ function renderList(){
       <div class="badge ${b.cls}">${b.txt}</div>
     </div>`;
   }).join('');
+  }catch(err){document.getElementById('lead-list').innerHTML='<div style="padding:20px;color:#e74c3c">Błąd: '+err.message+'</div>';}
 }
 
 function openLead(i){curIdx=i;showDetail();}
