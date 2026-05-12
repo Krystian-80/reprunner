@@ -37,7 +37,7 @@ h1{font-size:32px;font-weight:700;}
 .screen{position:fixed;inset:0;background:#0a0a0a;overflow-y:auto;display:none;scrollbar-width:none;}
 .screen.show{display:block;}
 .hdr{padding:48px 20px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e1e1e;position:sticky;top:0;background:#0a0a0a;z-index:10;}
-.back{width:40px;height:40px;border-radius:8px;background:#1e1e1e;border:none;color:#a0a0a0;font-size:18px;cursor:pointer;}
+.back{width:48px;height:48px;border-radius:10px;background:#1e1e1e;border:1px solid #383838;color:#f0f0f0;font-size:22px;font-weight:700;cursor:pointer;}
 .htitle{font-size:17px;font-weight:600;}
 .hsub{font-size:13px;color:#606060;margin-top:2px;}
 .hero{padding:20px;}
@@ -98,7 +98,7 @@ textarea:focus{border-color:#4a9eff;}
     <div class="chip" onclick="setF('hot',this)">Pilne</div>
   </div>
   <div class="list" id="list"></div>
-  <button class="fab2" onclick="exportCSV()">&#128228;</button>
+  <button class="fab2" onclick="exportXLS()">&#128228;</button>
   <button class="fab" onclick="alert('Webhooki n8n — ustawimy wieczorem!')">&#9881;&#65039;</button>
 </div>
 
@@ -298,26 +298,37 @@ function startVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   rec = new SR();
   rec.lang = "pl-PL";
-  rec.continuous = true;
-  rec.interimResults = true;
-  var base = document.getElementById("ta").value.trim();
-  var fin = base;
+  rec.continuous = false;  // KEY FIX: false stops Android from duplicating
+  rec.interimResults = false; // KEY FIX: no interim = no duplicates
+  var existing = document.getElementById("ta").value.trim();
+
   rec.onresult = function(e) {
-    var interim = "";
-    for (var i = e.resultIndex; i < e.results.length; i++) {
-      var t = e.results[i][0].transcript.trim();
-      if (e.results[i].isFinal) { fin += (fin ? " " : "") + t; }
-      else { interim = t; }
+    var newText = "";
+    for (var i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        newText += (newText ? " " : "") + e.results[i][0].transcript.trim();
+      }
     }
-    document.getElementById("ta").value = fin + (interim ? " ... " + interim : "");
+    var combined = existing ? existing + " " + newText : newText;
+    document.getElementById("ta").value = combined;
+    existing = combined; // update base for next rec session
+    // Auto-restart for continuous feel
+    if (isRec) {
+      setTimeout(function() {
+        if (isRec) {
+          try { rec.start(); } catch(e2) {}
+        }
+      }, 100);
+    }
   };
+
   rec.onend = function() {
-    var ta = document.getElementById("ta");
-    ta.value = ta.value.replace(/\s*\.\.\..*/g, "");
-    isRec = false; updateVUI();
+    if (!isRec) { updateVUI(); }
   };
-  rec.onerror = function() { isRec = false; updateVUI(); };
-  rec.start();
+  rec.onerror = function(e) {
+    if (e.error !== "aborted") { isRec = false; updateVUI(); }
+  };
+  try { rec.start(); } catch(e) {}
   isRec = true; updateVUI();
 }
 
@@ -353,20 +364,38 @@ function doReminder() {
   toast("Otwieram Kalendarz", "info");
 }
 
-function exportCSV() {
-  var rows = [["Imie","Firma","Telefon","Email","Miasto","Co czyscic","Kiedy","Notatka"]];
+function exportXLS() {
+  // Build data array
+  var rows = [["Imie","Firma","Telefon","Email","Miasto","Co czyscic","Kiedy kupuje","Notatka"]];
   leads.forEach(function(l) {
-    rows.push([l.imie, l.firma||"", l.phone, l.email, l.miasto||"", l.objective||"", l.timeframe||"", l.notatka||""]);
+    rows.push([
+      l.imie, l.firma||"", l.phone, l.email,
+      l.miasto||"", l.objective||"", l.timeframe||"", l.notatka||""
+    ]);
   });
-  var csv = rows.map(function(r) {
-    return r.map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
-  }).join("\n");
-  var blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
+
+  // Create XLS using data URIs (works without SheetJS)
+  var xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+  xml += 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+  xml += '<Worksheet ss:Name="RepRunner"><Table>\n';
+  rows.forEach(function(row, ri) {
+    xml += '<Row>';
+    row.forEach(function(cell) {
+      var safe = String(cell||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      var type = ri === 0 ? 'String' : 'String';
+      xml += '<Cell><Data ss:Type="' + type + '">' + safe + '</Data></Cell>';
+    });
+    xml += '</Row>\n';
+  });
+  xml += '</Table></Worksheet></Workbook>';
+
+  var blob = new Blob([xml], {type: "application/vnd.ms-excel;charset=utf-8"});
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "reprunner-" + new Date().toISOString().slice(0, 10) + ".csv";
+  a.download = "reprunner-" + new Date().toISOString().slice(0,10) + ".xls";
   a.click();
-  toast("CSV pobrany", "ok");
+  toast("XLS pobrany - " + leads.length + " leadow", "ok");
 }
 
 var toastT;
