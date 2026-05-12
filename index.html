@@ -99,7 +99,21 @@ textarea:focus{border-color:#4a9eff;}
   </div>
   <div class="list" id="list"></div>
   <button class="fab2" onclick="exportXLS()">&#128228;</button>
-  <button class="fab" onclick="alert('Webhooki n8n — ustawimy wieczorem!')">&#9881;&#65039;</button>
+  <button class="fab" onclick="openCfg()">&#9881;&#65039;</button>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="cfgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;">
+  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:16px 16px 0 0;padding:24px 20px 40px;width:100%;">
+    <div style="font-size:17px;font-weight:700;margin-bottom:20px;">&#9881;&#65039; Ustawienia n8n</div>
+    <div style="font-size:11px;font-weight:600;color:#606060;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">Webhook — notatka</div>
+    <input id="cfg-nw" type="url" placeholder="https://n8n.../webhook/reprunner-note"
+      style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;padding:13px 14px;font-size:14px;color:#f0f0f0;outline:none;margin-bottom:16px;font-family:inherit;">
+    <div style="font-size:11px;font-weight:600;color:#606060;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">Status polaczenia</div>
+    <div id="cfg-status" style="font-size:13px;color:#606060;margin-bottom:20px;">Nie skonfigurowany</div>
+    <button onclick="saveCfg()" style="width:100%;padding:16px;border-radius:8px;background:#4a9eff;color:#fff;font-size:15px;font-weight:600;cursor:pointer;border:none;margin-bottom:10px;">Zapisz</button>
+    <button onclick="closeCfg()" style="width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#a0a0a0;font-size:14px;font-weight:600;cursor:pointer;border:1px solid #2a2a2a;">Zamknij</button>
+  </div>
 </div>
 
 <div class="screen" id="det">
@@ -344,9 +358,29 @@ function saveNote() {
   stopVoice();
   var text = document.getElementById("ta").value.replace(/\s*\.\.\..*/g, "").trim();
   if (!text) { toast("Notatka pusta", "err"); return; }
-  leads[curIdx].notatka = text;
-  saveNoteLocal(leads[curIdx].idx, text);
-  toast("Zapisano!", "ok");
+  var l = leads[curIdx];
+  l.notatka = text;
+  saveNoteLocal(l.idx, text);
+
+  if (cfg.nw) {
+    fetch(cfg.nw, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        idx: l.idx,
+        imie: l.imie,
+        email: l.email,
+        phone: l.phone,
+        firma: l.firma,
+        notatka: text,
+        ts: new Date().toISOString()
+      })
+    })
+    .then(function() { toast("Zapisano + Google Sheet!", "ok"); })
+    .catch(function() { toast("Zapisano lokalnie (brak n8n)", "ok"); });
+  } else {
+    toast("Zapisano lokalnie!", "ok");
+  }
   closeNote();
   showDet();
 }
@@ -398,7 +432,33 @@ function exportXLS() {
   toast("XLS pobrany - " + leads.length + " leadow", "ok");
 }
 
-var toastT;
+function openCfg() {
+  var m = document.getElementById("cfgModal");
+  m.style.display = "flex";
+  document.getElementById("cfg-nw").value = cfg.nw || "";
+  updateCfgStatus();
+}
+function closeCfg() { document.getElementById("cfgModal").style.display = "none"; }
+function saveCfg() {
+  cfg.nw = document.getElementById("cfg-nw").value.trim();
+  try { localStorage.setItem("rr2_cfg", JSON.stringify(cfg)); } catch(e) {}
+  updateCfgStatus();
+  closeCfg();
+  toast("Zapisano!", "ok");
+}
+function updateCfgStatus() {
+  var el = document.getElementById("cfg-status");
+  if (cfg.nw) {
+    el.textContent = "Polaczony: " + cfg.nw.replace("https://","").slice(0,40) + "...";
+    el.style.color = "#2ecc71";
+  } else {
+    el.textContent = "Nie skonfigurowany";
+    el.style.color = "#606060";
+  }
+}
+
+var cfg = {};
+try { var sc = localStorage.getItem("rr2_cfg"); if (sc) cfg = JSON.parse(sc); } catch(e) { cfg = {}; }
 function toast(msg, type) {
   clearTimeout(toastT);
   var t = document.getElementById("toast");
