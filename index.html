@@ -194,7 +194,15 @@ var LEADS = [
 {"idx":14,"imie":"Janko","phone":"+48533377308","email":"imlesjan@gmail.com","miasto":"Skarzys.Kamienna","firma":"Kreatywne Rozw.","objective":"elementy drewniane","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 11/05"},
 {"idx":15,"imie":"Piotr Popowicz","phone":"+48786695276","email":"piotrpopowicz077@gmail.com","miasto":"Klodzko","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 11/05"},
 {"idx":16,"imie":"Karol","phone":"+48666666666","email":"karol.wabnic@o2.pl","miasto":"Bralin","firma":"","objective":"farba i lakier","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 11/05"},
-{"idx":17,"imie":"Marcin Kowalczyk","phone":"+48603433982","email":"marcin@amkdecor.pl","miasto":"Olesnica","firma":"AMKdecor","objective":"elementy drewniane","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 11/05"}
+{"idx":17,"imie":"Marcin Kowalczyk","phone":"+48603433982","email":"marcin@amkdecor.pl","miasto":"Olesnica","firma":"AMKdecor","objective":"elementy drewniane","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 11/05"},
+{"idx":18,"imie":"Andrzej Koscielniak","phone":"+48602301488","email":"Koscielniak0@op.pl","miasto":"Sroda Wielkopolska","firma":"Koscielniak","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 12/05"},
+{"idx":19,"imie":"Jan Bura","phone":"+48608611523","email":"jasiekj84@wp.pl","miasto":"Narew","firma":"","objective":"rdza i korozja","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 12/05"},
+{"idx":20,"imie":"Jan Kufel","phone":"+48609111097","email":"kufel.janusz.jk@gmail.com","miasto":"Koluszki","firma":"","objective":"rdza i korozja","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 13/05"},
+{"idx":21,"imie":"Piotr M","phone":"+48661178311","email":"piotrmmalina84@wp.pl","miasto":"Jam","firma":"","objective":"farba i lakier","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 13/05"},
+{"idx":22,"imie":"Waclaw Srokosz","phone":"+48723028906","email":"wacoo666@gmail.com","miasto":"Konopiska","firma":"","objective":"farba i lakier","timeframe":"za 3-6 miesiecy","notatka":"","oferta_status":"mail 13/05"},
+{"idx":23,"imie":"Remigiusz Rypien","phone":"+48734496569","email":"r.remigiusz@wp.pl","miasto":"Wieprz","firma":"","objective":"rdza i korozja","timeframe":"tylko sprawdzam opcje","notatka":"","oferta_status":"mail 13/05"},
+{"idx":24,"imie":"Janusz GS","phone":"+48605108884","email":"Januszsmiechowski@gmail.com","miasto":"Turek","firma":"","objective":"rdza i korozja","timeframe":"jak najszybciej","notatka":"","oferta_status":"mail 13/05"},
+{"idx":25,"imie":"Robert Sokolowski","phone":"+48696108106","email":"r.sokolowski1964@gmail.com","miasto":"Zagan","firma":"Falcon inc","objective":"rdza i korozja","timeframe":"w ciagu 1-3 miesiecy","notatka":"","oferta_status":"mail 13/05"}
 ];
 
 var leads = LEADS.map(function(l){ return Object.assign({}, l); });
@@ -468,6 +476,7 @@ function loadDone() {
     leads.forEach(function(l){ if (d[l.idx]) l.status = "DONE"; });
   } catch(e) {}
 }
+function openCfg() {
   var m = document.getElementById("cfgModal");
   m.style.display = "flex";
   document.getElementById("cfg-nw").value = cfg.nw || "";
